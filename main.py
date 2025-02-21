@@ -95,5 +95,24 @@ action_history_button = customtkinter.CTkButton(master=canvas, image=action_hist
 action_history_button.place(x=277, y=265)
 # -----------------------------End-----------------------------
 
+# --------------------------Drug Tab---------------------------
+search_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\search.png"),
+                                  dark_image=Image.open("assets\\icons\\search.png"),
+                                  size=(20, 20))
+
+search_button = customtkinter.CTkButton(master=canvas, image=search_icon, text='', width=50, height=33, corner_radius=8, bg_color='White', border_color='White')
+search_button.place(x=1854, y=100)
+
+tabview_1 = customtkinter.CTkTabview(master=canvas, width=280, height=240, bg_color='White', corner_radius=7)
+tabview_1._segmented_button.configure(font=('Alte Haas Grotesk', 15, 'bold'))
+tabview_1.place(x=1628, y=134)
+tabview_1.add("All"); tabview_1.add("Search Results")
+# -----------------------------End-----------------------------
+
+# ---------------------------STT Tab---------------------------
+start_recording_button = customtk.create_image_button(root, 'assets\\icons\\start_recording.jpg', 261, 824, 25, 25, bg='#3e3e3e', active_bg='#3e3e3e', disable_btn_press_anim=True)
+stop_recording_button = customtk.create_image_button(root, 'assets\\icons\\stop_recording.jpg', 307, 825, 25, 25, bg='#3e3e3e', active_bg='#3e3e3e', disable_btn_press_anim=True)
+transcribe_button = customtk.create_image_button(root, 'assets\\icons\\transcript.jpg', 351, 823, 28, 28, bg='#3e3e3e', active_bg='#3e3e3e', disable_btn_press_anim=True)
+# -----------------------------End-----------------------------
 root.mainloop()
 
