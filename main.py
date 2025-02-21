@@ -28,7 +28,7 @@ else:
     primary_color = theme_json['CTkButton']['fg_color'][0] # Primary color of UI
     print(colored(" THEME ", 'light_grey', 'on_magenta'),  f"Sucessfully Loaded: '{selected_color_theme.title()}' from path" , colored(f"'themes\\{selected_color_theme}.json'", 'dark_grey'))
     del theme_json # Why waste memory?
-# --------------=----End------=------------
+# -------------------End-------------------
 
 root = customtkinter.CTk()
 root.title("PreciseDose")
@@ -64,7 +64,8 @@ patient = json.load(open(f"content\\patients\\{patient}")) # Parse JSON to Dicti
 print(colored(" INFO ", 'black', 'on_yellow'),  f"Selected Patient: {patient['name']} [ID: {patient_id}] from path" , colored(f"'content\\patients\\{patient_id}.json'", 'dark_grey'))
 
 # Update Profile
-canvas.create_text(152, 73, text=patient['name'], font=('Alte Haas Grotesk', 17, 'bold'), fill='Grey30', anchor=tk.NW)
+canvas.create_line(150, 65, 387, 65, fill='White', width=1); canvas.create_line(150, 105, 387, 105, fill='White', width=1)
+canvas.create_text(152, 71, text=patient['name'], font=('Alte Haas Grotesk', 17, 'bold'), fill='Grey30', anchor=tk.NW)
 patient_headshot = customtk.create_tk_image(f"content\\avatars\\{patient_id}.png", 100, 100)
 canvas.create_image(30, 66, image=patient_headshot, anchor=tk.NW)
 canvas.create_text(205, 126, text=patient['age'], font=('Alte Haas Grotesk', 12, 'bold'), fill='Grey30', anchor=tk.W, justify='left')
@@ -95,7 +96,16 @@ action_history_button = customtkinter.CTkButton(master=canvas, image=action_hist
 action_history_button.place(x=277, y=265)
 # -----------------------------End-----------------------------
 
+# ---------------------------STT Tab---------------------------
+start_recording_button = customtk.create_image_button(root, 'assets\\icons\\start_recording.jpg', 261, 824, 25, 25, bg='#3e3e3e', active_bg='#3e3e3e', disable_btn_press_anim=True)
+stop_recording_button = customtk.create_image_button(root, 'assets\\icons\\stop_recording.jpg', 307, 825, 25, 25, bg='#3e3e3e', active_bg='#3e3e3e', disable_btn_press_anim=True)
+transcribe_button = customtk.create_image_button(root, 'assets\\icons\\transcript.jpg', 351, 823, 28, 28, bg='#3e3e3e', active_bg='#3e3e3e', disable_btn_press_anim=True)
+# -----------------------------End-----------------------------
+
 # --------------------------Drug Tab---------------------------
+search_entry = customtkinter.CTkEntry(master=canvas, placeholder_text="Search...", corner_radius=8, width=221, height=32, bg_color='White', font=('Alte Haas Grotesk', 13))
+search_entry.place(x=1628, y=101)
+
 search_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\search.png"),
                                   dark_image=Image.open("assets\\icons\\search.png"),
                                   size=(20, 20))
@@ -109,10 +119,23 @@ tabview_1.place(x=1628, y=134)
 tabview_1.add("All"); tabview_1.add("Search Results")
 # -----------------------------End-----------------------------
 
-# ---------------------------STT Tab---------------------------
-start_recording_button = customtk.create_image_button(root, 'assets\\icons\\start_recording.jpg', 261, 824, 25, 25, bg='#3e3e3e', active_bg='#3e3e3e', disable_btn_press_anim=True)
-stop_recording_button = customtk.create_image_button(root, 'assets\\icons\\stop_recording.jpg', 307, 825, 25, 25, bg='#3e3e3e', active_bg='#3e3e3e', disable_btn_press_anim=True)
-transcribe_button = customtk.create_image_button(root, 'assets\\icons\\transcript.jpg', 351, 823, 28, 28, bg='#3e3e3e', active_bg='#3e3e3e', disable_btn_press_anim=True)
+# ------------------------Calibrate Tab------------------------
+calibrate_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\calibrate.png"),
+                                  dark_image=Image.open("assets\\icons\\calibrate.png"),
+                                  size=(20, 20))
+
+search_button = customtkinter.CTkButton(master=canvas, image=calibrate_icon, text='Run Simulation', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=280, height=33, corner_radius=8, bg_color='White', border_color='White')
+search_button.place(x=1628, y=548)
 # -----------------------------End-----------------------------
+
+# ------------------------Administer Tab-----------------------
+administer_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\administer.png"),
+                                  dark_image=Image.open("assets\\icons\\administer.png"),
+                                  size=(20, 20))
+
+search_button = customtkinter.CTkButton(master=canvas, image=administer_icon, text='Administer Drug', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=280, height=33, corner_radius=8, bg_color='White', border_color='White')
+search_button.place(x=1628, y=1036)
+# -----------------------------End-----------------------------
+
 root.mainloop()
 

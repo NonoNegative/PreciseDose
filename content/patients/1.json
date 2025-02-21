@@ -2,5 +2,5 @@
     "name": "Example Patient 1",
     "gender": "Male",
     "age": 36,
-    "case": "Sudden cardiac arrest (7m ago), might have been due to alcohol abuse."
+    "case": "Sudden cardiac arrest (unknown time), might have been due to alcohol abuse."
 }
