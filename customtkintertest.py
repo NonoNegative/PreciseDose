@@ -1,31 +1,76 @@
 import customtkinter
-import tkinter as tk
-from PIL import Image, ImageTk, ImageColor
-from shared.transforms import RGBTransform
+import tkinterDnD
 
-customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
+customtkinter.set_ctk_parent_class(tkinterDnD.Tk)
+
+customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-root = customtkinter.CTk()
-root.title("PreciseDose")
-root.attributes('-fullscreen', True)
+app = customtkinter.CTk()
+app.geometry("400x780")
+app.title("CustomTkinter simple_example.py")
 
-screen_height = root.winfo_screenheight()
-screen_width = root.winfo_screenwidth()
+print(type(app), isinstance(app, tkinterDnD.Tk))
 
-background_image = Image.open('assets\\backgrounds\\sample.jpg')
-background_image = background_image.resize((screen_width, screen_height), Image.Resampling.LANCZOS)
-background_image = ImageTk.PhotoImage(background_image)
+def button_callback():
+    print("Button click", combobox_1.get())
 
-canvas = tk.Canvas(root, width=screen_width, height=screen_height, highlightthickness=0)
-canvas.pack()
 
-optionmenu_1 = customtkinter.CTkOptionMenu(canvas, values=["Option 1", "Option 2", "Option 42 long long long..."])
-optionmenu_1.place(x=200, y=200, anchor=tk.CENTER)
+def slider_callback(value):
+    progressbar_1.set(value)
+
+
+frame_1 = customtkinter.CTkFrame(master=app)
+frame_1.pack(pady=20, padx=60, fill="both", expand=True)
+
+label_1 = customtkinter.CTkLabel(master=frame_1, justify=customtkinter.LEFT)
+label_1.pack(pady=10, padx=10)
+
+progressbar_1 = customtkinter.CTkProgressBar(master=frame_1)
+progressbar_1.pack(pady=10, padx=10)
+
+button_1 = customtkinter.CTkButton(master=frame_1, command=button_callback)
+button_1.pack(pady=10, padx=10)
+
+slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_callback, from_=0, to=1)
+slider_1.pack(pady=10, padx=10)
+slider_1.set(0.5)
+
+entry_1 = customtkinter.CTkEntry(master=frame_1, placeholder_text="CTkEntry")
+entry_1.pack(pady=10, padx=10)
+
+optionmenu_1 = customtkinter.CTkOptionMenu(frame_1, values=["Option 1", "Option 2", "Option 42 long long long..."])
+optionmenu_1.pack(pady=10, padx=10)
 optionmenu_1.set("CTkOptionMenu")
 
-label_1 = customtkinter.CTkLabel(master=root, justify=customtkinter.CENTER, text="Age", text_color='White', font=('Century Gothic', 16, 'bold'), corner_radius=7, bg_color='White', fg_color='#00aeef')
-label_1.place(x=400, y=400, anchor=tk.CENTER)
+combobox_1 = customtkinter.CTkComboBox(frame_1, values=["Option 1", "Option 2", "Option 42 long long long..."])
+combobox_1.pack(pady=10, padx=10)
+combobox_1.set("CTkComboBox")
 
-canvas.create_image(0, 0, anchor=tk.NW, image=background_image)
-root.mainloop()
+checkbox_1 = customtkinter.CTkCheckBox(master=frame_1)
+checkbox_1.pack(pady=10, padx=10)
+
+radiobutton_var = customtkinter.IntVar(value=1)
+
+radiobutton_1 = customtkinter.CTkRadioButton(master=frame_1, variable=radiobutton_var, value=1)
+radiobutton_1.pack(pady=10, padx=10)
+
+radiobutton_2 = customtkinter.CTkRadioButton(master=frame_1, variable=radiobutton_var, value=2)
+radiobutton_2.pack(pady=10, padx=10)
+
+switch_1 = customtkinter.CTkSwitch(master=frame_1)
+switch_1.pack(pady=10, padx=10)
+
+text_1 = customtkinter.CTkTextbox(master=frame_1, width=200, height=70)
+text_1.pack(pady=10, padx=10)
+text_1.insert("0.0", "CTkTextbox\n\n\n\n")
+
+segmented_button_1 = customtkinter.CTkSegmentedButton(master=frame_1, values=["CTkSegmentedButton", "Value 2"])
+segmented_button_1.pack(pady=10, padx=10)
+
+tabview_1 = customtkinter.CTkTabview(master=frame_1, width=300)
+tabview_1.pack(pady=10, padx=10)
+tabview_1.add("CTkTabview")
+tabview_1.add("Tab 2")
+
+app.mainloop()

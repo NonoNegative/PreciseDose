@@ -15,7 +15,7 @@ print(colored(" START ", 'light_grey', 'on_dark_grey'), "Execution Timestamp:", 
 
 # ------------------Theme------------------
 colorama_init() # Initialize colorama for pretty printing
-selected_color_theme = "blue" # This is where the magic happens
+selected_color_theme = "rime" # This is where the magic happens
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 default_themes = {"blue":'#3B8ED0', "green":'#2CC985', "dark-blue":'#3A7EBF'}
 if selected_color_theme in default_themes:
@@ -94,6 +94,8 @@ medical_records_button.place(x=145, y=265)
 
 action_history_button = customtkinter.CTkButton(master=canvas, image=action_history_icon, text='Action\nHistory', font=('Alte Haas Grotesk', 15, 'bold'), compound=tk.TOP, width=120, height=150, corner_radius=12, bg_color='White', border_color='White')
 action_history_button.place(x=277, y=265)
+
+canvas.create_line(13, 430, 397, 430, fill='#e7e7e7', width=4)
 # -----------------------------End-----------------------------
 
 # ---------------------------STT Tab---------------------------
@@ -129,6 +131,11 @@ search_button.place(x=1628, y=548)
 # -----------------------------End-----------------------------
 
 # ------------------------Administer Tab-----------------------
+combobox_1 = customtkinter.CTkComboBox(canvas, values=["Option 1", "Option 2", "Option 42 long long long..."], width=280, height=33, font=('Alte Haas Grotesk', 14), state='readonly', corner_radius=7)
+combobox_1.place(x=1628, y=830); combobox_1.set("Select Type...")
+combobox_2 = customtkinter.CTkComboBox(canvas, values=["Option 1", "Option 2", "Option 42 long long long..."], width=280, height=33, font=('Alte Haas Grotesk', 14), state='readonly', corner_radius=7)
+combobox_2.place(x=1628, y=874); combobox_2.set("Select Method...")
+
 administer_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\administer.png"),
                                   dark_image=Image.open("assets\\icons\\administer.png"),
                                   size=(20, 20))
