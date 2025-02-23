@@ -119,6 +119,15 @@ tabview_1 = customtkinter.CTkTabview(master=canvas, width=280, height=240, bg_co
 tabview_1._segmented_button.configure(font=('Alte Haas Grotesk', 15, 'bold'))
 tabview_1.place(x=1628, y=134)
 tabview_1.add("All"); tabview_1.add("Search Results")
+
+# Tab 1 ("All")
+drug_list_canvas = tk.Canvas(tabview_1.tab("All"), width=252, height=187, highlightthickness=0, background=tabview_1.cget('fg_color')[0])
+drug_list_canvas.place(x=0, y=0)
+scroll_bar = customtkinter.CTkScrollbar(tabview_1.tab("All"), command=drug_list_canvas.yview, height=195)
+drug_list_canvas.config(yscrollcommand=scroll_bar.set, scrollregion=(0,0,0,300))
+scroll_bar.place(x=254, y=-4)
+
+drug_list_canvas.create_text(0, 0, text=patient['age'], font=('Alte Haas Grotesk', 12, 'bold'), fill='Grey30', anchor=tk.NW, justify='left')
 # -----------------------------End-----------------------------
 
 # ------------------------Calibrate Tab------------------------
@@ -126,8 +135,8 @@ calibrate_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\c
                                   dark_image=Image.open("assets\\icons\\calibrate.png"),
                                   size=(20, 20))
 
-search_button = customtkinter.CTkButton(master=canvas, image=calibrate_icon, text='Run Simulation', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=280, height=33, corner_radius=8, bg_color='White', border_color='White')
-search_button.place(x=1628, y=548)
+calibrate_button = customtkinter.CTkButton(master=canvas, image=calibrate_icon, text='Run Simulation', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=280, height=33, corner_radius=8, bg_color='White', border_color='White')
+calibrate_button.place(x=1628, y=548)
 # -----------------------------End-----------------------------
 
 # ------------------------Administer Tab-----------------------
@@ -140,8 +149,8 @@ administer_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\
                                   dark_image=Image.open("assets\\icons\\administer.png"),
                                   size=(20, 20))
 
-search_button = customtkinter.CTkButton(master=canvas, image=administer_icon, text='Administer Drug', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=280, height=33, corner_radius=8, bg_color='White', border_color='White')
-search_button.place(x=1628, y=1036)
+administer_button = customtkinter.CTkButton(master=canvas, image=administer_icon, text='Administer Drug', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=280, height=33, corner_radius=8, bg_color='White', border_color='White')
+administer_button.place(x=1628, y=1036)
 # -----------------------------End-----------------------------
 
 root.mainloop()
