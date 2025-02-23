@@ -124,10 +124,22 @@ tabview_1.add("All"); tabview_1.add("Search Results")
 drug_list_canvas = tk.Canvas(tabview_1.tab("All"), width=252, height=187, highlightthickness=0, background=tabview_1.cget('fg_color')[0])
 drug_list_canvas.place(x=0, y=0)
 scroll_bar = customtkinter.CTkScrollbar(tabview_1.tab("All"), command=drug_list_canvas.yview, height=195)
-drug_list_canvas.config(yscrollcommand=scroll_bar.set, scrollregion=(0,0,0,300))
+drug_list_canvas.config(yscrollcommand=scroll_bar.set)
 scroll_bar.place(x=254, y=-4)
 
-drug_list_canvas.create_text(0, 0, text=patient['age'], font=('Alte Haas Grotesk', 12, 'bold'), fill='Grey30', anchor=tk.NW, justify='left')
+drug_list = ['Drug 1', 'Drug 2', 'Drug 3', 'Drug 4', 'Drug 5', 'Drug 6']
+
+def generate_tab_1():
+    global drug_list_canvas
+    y = 0  # Initial y pos
+    for drug in drug_list:
+        drug_button = customtkinter.CTkButton(master=drug_list_canvas, text=drug, font=('Alte Haas Grotesk', 15, 'bold'), width=252, height=33, corner_radius=7, bg_color=tabview_1.cget('fg_color')[0])
+        drug_list_canvas.create_window(0, y, window=drug_button, anchor=tk.NW)
+        y = y + 38
+    root.update()
+    drug_list_canvas.configure(scrollregion=drug_list_canvas.bbox("all"))
+
+generate_tab_1()
 # -----------------------------End-----------------------------
 
 # ------------------------Calibrate Tab------------------------
