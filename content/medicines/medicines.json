@@ -1,6 +1,6 @@
 {
     "Epinephrine": {
-        "description" : "Administered every 3=5 minutes early in CPR (every other cycle) for asystole, ventricular fibrillation, PEA.",
+        "description" : "Administered every 3-5 minutes early in CPR (every other cycle) for asystole, ventricular fibrillation, PEA.",
         "recommended_dosage": {
             "adult" : 0,
             "paed" : 0,
@@ -9,7 +9,7 @@
     },
 
     "Vasopressin": {
-        "description" : "As an alternative to epinephrine every 3–5 minutes (every second BLS cycle) for asystole, bradycardia, PEA.",
+        "description" : "As an alternative to epinephrine every 3-5 minutes (every second BLS cycle) for asystole, bradycardia, PEA.",
         "recommended_dosage": {
             "adult" : 0,
             "paed" : 0,
@@ -18,7 +18,7 @@
     },
 
     "Atropine": {
-        "description" : "Sinus bradycardia, asystole, or PEA associated with high vagal tone",
+        "description" : "Sinus bradycardia, asystole, or PEA associated with high vagal tone.",
         "recommended_dosage": {
             "adult" : 0,
             "paed" : 0,
@@ -36,7 +36,7 @@
     },
 
     "Sodium Bicarbonate": {
-        "description" : "Severe metabolic acidemia (pH < 7.0) associated with prolonged (>10–15 minutes) CPR efforts (must be adequately ventilated to be effective), hyperkalemia",
+        "description" : "Severe metabolic acidemia (pH < 7.0) associated with prolonged CPR efforts (must be adequately ventilated to be effective), hyperkalemia.",
         "recommended_dosage": {
             "adult" : 0,
             "paed" : 0,

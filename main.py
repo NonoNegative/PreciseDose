@@ -9,6 +9,7 @@ from termcolor import colored
 from PIL import Image, ImageTk, ImageColor
 from shared.transforms import RGBTransform
 from datetime import datetime
+from functools import partial
 # -------------------End-------------------
 
 print(colored(" START ", 'light_grey', 'on_dark_grey'), "Execution Timestamp:", colored(datetime.now(), 'dark_grey'))
@@ -37,8 +38,8 @@ else:
 #-----------------Load Content-------------
 
 # Load drugs
-drug_list = ["Epinephrine", "Vasopressin", "Atropine"]
-with open('content\\medicines.json') as file:
+drug_list = settings["drugs"]
+with open('content\\medicines\\medicines.json') as file:
     drug_dict = json.load(file)
 
 # Load settings
@@ -144,13 +145,12 @@ def generate_tab_1():
     global drug_list_canvas
     y = 0  # Initial y pos
     for drug in drug_list:
-        drug_button = customtkinter.CTkButton(master=drug_list_canvas, text=drug[], font=('Alte Haas Grotesk', 15, 'bold'), width=252, height=33, corner_radius=7, bg_color=tabview_1.cget('fg_color')[0])
+        drug_button = customtkinter.CTkButton(master=drug_list_canvas, text=drug, font=('Alte Haas Grotesk', 15, 'bold'), width=252, height=33, corner_radius=7, bg_color=tabview_1.cget('fg_color')[0], command=partial(update_calibrate_tab, drug))
         drug_list_canvas.create_window(0, y, window=drug_button, anchor=tk.NW)
         y = y + 38
     root.update()
     drug_list_canvas.configure(scrollregion=drug_list_canvas.bbox("all"))
 
-generate_tab_1()
 # -----------------------------End-----------------------------
 
 # ------------------------Calibrate Tab------------------------
@@ -160,6 +160,16 @@ calibrate_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\c
 
 calibrate_button = customtkinter.CTkButton(master=canvas, image=calibrate_icon, text='Run Simulation', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=280, height=33, corner_radius=8, bg_color='White', border_color='White')
 calibrate_button.place(x=1628, y=548)
+
+drug_name_label = customtkinter.CTkLabel(master=canvas, text="None", font=('Alte Haas Grotesk', 12, 'bold'), width=162, height=23, corner_radius=6, bg_color='White', fg_color="#e7e7e7", text_color='Grey25')
+drug_name_label.place(x=1745, y=437, anchor=tk.NW)
+
+drug_desc_label = customtkinter.CTkLabel(master=canvas, text="Select a drug to view its description.", font=('Alte Haas Grotesk', 12), width=160, height=74, bg_color='White', fg_color="White", wraplength=162, justify='left', anchor=tk.NW, text_color='Grey20')
+drug_desc_label.place(x=1747, y=464, anchor=tk.NW)
+
+def update_calibrate_tab(drug):
+    drug_name_label.configure(text=drug)
+    drug_desc_label.configure(text=drug_dict[drug]['description'])
 # -----------------------------End-----------------------------
 
 # ------------------------Administer Tab-----------------------
@@ -176,5 +186,6 @@ administer_button = customtkinter.CTkButton(master=canvas, image=administer_icon
 administer_button.place(x=1628, y=1036)
 # -----------------------------End-----------------------------
 
+generate_tab_1()
 root.mainloop()
 
