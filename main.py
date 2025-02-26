@@ -13,9 +13,13 @@ from datetime import datetime
 
 print(colored(" START ", 'light_grey', 'on_dark_grey'), "Execution Timestamp:", colored(datetime.now(), 'dark_grey'))
 
+# ---------------Load Settings------------
+with open('settings.json') as my_settings_file:
+    settings = json.load(my_settings_file)
+
 # ------------------Theme------------------
 colorama_init() # Initialize colorama for pretty printing
-selected_color_theme = "rime" # This is where the magic happens
+selected_color_theme = settings['theme'] # This is where the magic happens
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 default_themes = {"blue":'#3B8ED0', "green":'#2CC985', "dark-blue":'#3A7EBF'}
 if selected_color_theme in default_themes:
@@ -29,6 +33,15 @@ else:
     print(colored(" THEME ", 'light_grey', 'on_magenta'),  f"Sucessfully Loaded: '{selected_color_theme.title()}' from path" , colored(f"'themes\\{selected_color_theme}.json'", 'dark_grey'))
     del theme_json # Why waste memory?
 # -------------------End-------------------
+
+#-----------------Load Content-------------
+
+# Load drugs
+drug_list = ["Epinephrine", "Vasopressin", "Atropine"]
+with open('content\\medicines.json') as file:
+    drug_dict = json.load(file)
+
+# Load settings
 
 root = customtkinter.CTk()
 root.title("PreciseDose")
@@ -127,13 +140,11 @@ scroll_bar = customtkinter.CTkScrollbar(tabview_1.tab("All"), command=drug_list_
 drug_list_canvas.config(yscrollcommand=scroll_bar.set)
 scroll_bar.place(x=254, y=-4)
 
-drug_list = ['Drug 1', 'Drug 2', 'Drug 3', 'Drug 4', 'Drug 5', 'Drug 6']
-
 def generate_tab_1():
     global drug_list_canvas
     y = 0  # Initial y pos
     for drug in drug_list:
-        drug_button = customtkinter.CTkButton(master=drug_list_canvas, text=drug, font=('Alte Haas Grotesk', 15, 'bold'), width=252, height=33, corner_radius=7, bg_color=tabview_1.cget('fg_color')[0])
+        drug_button = customtkinter.CTkButton(master=drug_list_canvas, text=drug[], font=('Alte Haas Grotesk', 15, 'bold'), width=252, height=33, corner_radius=7, bg_color=tabview_1.cget('fg_color')[0])
         drug_list_canvas.create_window(0, y, window=drug_button, anchor=tk.NW)
         y = y + 38
     root.update()
