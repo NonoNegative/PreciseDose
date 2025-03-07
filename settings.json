@@ -1,4 +1,5 @@
 {
-    "theme": "rime",
+    "time_limit": 300,
+    "theme": "blue",
     "drugs": ["Epinephrine", "Vasopressin", "Atropine", "Lidocaine", "Sodium Bicarbonate"] 
 }

@@ -10,6 +10,7 @@ from PIL import Image, ImageTk, ImageColor
 from shared.transforms import RGBTransform
 from datetime import datetime
 from functools import partial
+import time
 # -------------------End-------------------
 
 print(colored(" START ", 'light_grey', 'on_dark_grey'), "Execution Timestamp:", colored(datetime.now(), 'dark_grey'))
@@ -69,6 +70,33 @@ color_static = RGBTransform().mix_with(ImageColor.getcolor(primary_color, "RGB")
 color_static.putalpha(alpha)
 color_static = ImageTk.PhotoImage(color_static)
 canvas.create_image(0, 0 ,anchor=tk.NW, image=color_static)
+
+drawer_width = 200; drawer_height = 40
+drawer_edge_1 = customtk.create_tk_image("assets\\icons\\drawer.png", drawer_height, drawer_height)
+drawer_edge_2 = customtk.create_tk_image("assets\\icons\\drawer.png", drawer_height, drawer_height, flip=1)
+canvas.create_rectangle((screen_width-drawer_width)//2, 0, (screen_width+drawer_width)//2, drawer_height, fill='#f3f3f3', width=0)
+canvas.create_image((screen_width-drawer_width)//2, 0 ,anchor=tk.NE, image=drawer_edge_1)
+canvas.create_image((screen_width+drawer_width)//2, 0 ,anchor=tk.NW, image=drawer_edge_2)
+
+time_limit = settings['time_limit']
+time_elapsed = 0
+
+def update_timer():
+    global time_elapsed
+    time_elapsed += 1
+    ScoreL.configure(text='🕑 '+time.strftime('%M:%S', time.gmtime(time_elapsed)))
+    if time_elapsed < time_limit:
+        # schedule next update 1 second later
+        canvas.after(1000, update_timer)
+
+ScoreL = tk.Label(canvas, text='🕑 '+time.strftime('%M:%S', time.gmtime(time_elapsed)), bg='#f3f3f3', fg='Grey30', font=("Alte Haas Grotesk", 15, 'bold'), justify='left')
+ScoreL.place(x=((screen_width-drawer_width)//2) - 15, y=5, anchor=tk.NW)
+canvas.after(1000, update_timer)
+finish_button = customtkinter.CTkButton(canvas, height=30, corner_radius=10, text='Finish', font=('Alte Haas Grotesk', 15, 'bold'), text_color='White', width=70)
+finish_button.place(x=((screen_width+drawer_width)//2)+12, y=5, anchor=tk.NE)
+halt_button = customtkinter.CTkButton(canvas, height=30, corner_radius=10, text='Halt', font=('Alte Haas Grotesk', 15, 'bold'), text_color='White', width=60, fg_color='IndianRed2', hover_color='IndianRed4')
+halt_button.place(x=((screen_width+drawer_width)//2)-63, y=5, anchor=tk.NE)
+
 # ------------------------End------------------------
 
 # -----------------Patient Intialize-----------------

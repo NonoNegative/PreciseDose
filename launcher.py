@@ -13,10 +13,10 @@ screen_width = root.winfo_screenwidth()
 canvas = tk.Canvas(root, width=screen_width, height=screen_height, highlightthickness=0, background='Black')
 canvas.pack()
 
-video_player = TkinterVideo(canvas, False, False, borderwidth=0, bg='Black', fg='black')
-video_player.set_size((screen_width, screen_height))
+video_player = TkinterVideo(canvas, borderwidth=0, bg='Black', fg='black', consistant_frame_rate=True)
+video_player.set_size((430, 684))
 video_player.place(x=0, y=0)
-video_player.bind("<<Loaded>>", lambda e: e.widget.config(width=screen_width, height=screen_height))
+video_player.bind("<<Loaded>>", lambda e: e.widget.config(width=430, height=684))
 video_player.load("test.mp4")
 
 def start_video():

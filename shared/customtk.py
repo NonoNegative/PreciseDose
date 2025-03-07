@@ -2,9 +2,13 @@ import tkinter as tk
 from PIL import Image, ImageTk, ImageColor
 import tkinter.messagebox as messagebox
 
-def create_tk_image(img_path, size_x, size_y):
+def create_tk_image(img_path, size_x, size_y, rotation=None, flip=None):
     image = Image.open(img_path)
     image = image.resize((size_x, size_y), Image.Resampling.LANCZOS)
+    if rotation:
+        image = image.rotate(rotation)
+    if flip:
+        image = image.transpose(Image.FLIP_LEFT_RIGHT)
     image = ImageTk.PhotoImage(image)
     return image
 
