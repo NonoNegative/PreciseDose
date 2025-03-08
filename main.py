@@ -11,6 +11,7 @@ from shared.transforms import RGBTransform
 from datetime import datetime
 from functools import partial
 import time
+import shared.functions as ext_funcs
 # -------------------End-------------------
 
 print(colored(" START ", 'light_grey', 'on_dark_grey'), "Execution Timestamp:", colored(datetime.now(), 'dark_grey'))
@@ -90,7 +91,7 @@ def update_timer():
         canvas.after(1000, update_timer)
 
 ScoreL = tk.Label(canvas, text='🕑 '+time.strftime('%M:%S', time.gmtime(time_elapsed)), bg='#f3f3f3', fg='Grey30', font=("Alte Haas Grotesk", 15, 'bold'), justify='left')
-ScoreL.place(x=((screen_width-drawer_width)//2) - 15, y=5, anchor=tk.NW)
+ScoreL.place(x=((screen_width-drawer_width)//2) - 12, y=5, anchor=tk.NW)
 canvas.after(1000, update_timer)
 finish_button = customtkinter.CTkButton(canvas, height=30, corner_radius=10, text='Finish', font=('Alte Haas Grotesk', 15, 'bold'), text_color='White', width=70)
 finish_button.place(x=((screen_width+drawer_width)//2)+12, y=5, anchor=tk.NE)
@@ -128,7 +129,7 @@ action_history_icon = customtkinter.CTkImage(light_image=Image.open("assets\\ico
                                   dark_image=Image.open("assets\\icons\\action_history.png"),
                                   size=(80, 80))
 
-full_profile_button = customtkinter.CTkButton(master=canvas, image=full_profile_icon, text='Complete\nDetails', font=('Alte Haas Grotesk', 15, 'bold'), compound=tk.TOP, width=120, height=150, corner_radius=12, bg_color='White', border_color='White')
+full_profile_button = customtkinter.CTkButton(master=canvas, image=full_profile_icon, text='Complete\nDetails', font=('Alte Haas Grotesk', 15, 'bold'), compound=tk.TOP, width=120, height=150, corner_radius=12, bg_color='White', border_color='White', command= lambda: ext_funcs.open_pdf('Patient Profile', 'content\\documents\\1_profile.pdf'))
 full_profile_button.place(x=12, y=265)
 
 medical_records_button = customtkinter.CTkButton(master=canvas, image=medical_records_icon, text='Medical\nHistory', font=('Alte Haas Grotesk', 15, 'bold'), compound=tk.TOP, width=120, height=150, corner_radius=12, bg_color='White', border_color='White')
@@ -138,6 +139,79 @@ action_history_button = customtkinter.CTkButton(master=canvas, image=action_hist
 action_history_button.place(x=277, y=265)
 
 canvas.create_line(13, 430, 397, 430, fill='#e7e7e7', width=4)
+# -----------------------------End-----------------------------
+
+# ----------------------Captured Parameters--------------------
+json_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\json.png"),
+                                  dark_image=Image.open("assets\\icons\\json.png"),
+                                  size=(20, 20))
+
+json_button = customtkinter.CTkButton(master=canvas, image=json_icon, text='Edit Raw Hashmap', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=385, height=33, corner_radius=8, bg_color='White', border_color='White')
+json_button.place(x=12, y=486)
+
+delete_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\delete.png"),
+                                  dark_image=Image.open("assets\\icons\\delete.png"),
+                                  size=(20, 20))
+
+delete_button = customtkinter.CTkButton(master=canvas, image=delete_icon, text='Clear All Elements', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=385, height=33, corner_radius=8, bg_color='White', border_color='White')
+delete_button.place(x=12, y=526)
+
+parameters = {
+    'age': 20,
+    'height': 180,
+    'gender': 'Male',
+    'heartrate': 60,
+    'blood pressure': '120/60'
+}
+
+def update_parameters(canvas, parameters, start_x=23, start_y=580, row_spacing=13, padding=5, max_width=391):
+    x, y = start_x, start_y 
+    button_height = 20 
+    button_list = [] 
+    
+    for key, value in parameters.items():
+        # Create a segmented button with key and value as options
+        element = customtkinter.CTkSegmentedButton(
+            master=canvas,
+            values=[f' {key.title()} ', f' {value} '],
+            font=('Alte Haas Grotesk', 14, 'bold'),
+            corner_radius=7,
+            height=button_height
+        )
+        element.set(f' {key.title()} ')
+        
+        # Measure button width
+        canvas.update_idletasks()
+        button_width = element.winfo_reqwidth()
+        
+        # If the next button exceeds max_width, move to the next row
+        if x + button_width > max_width:
+            x = start_x 
+            y += button_height + row_spacing
+
+        element.place(x=x, y=y, anchor='nw')
+        button_list.append(element)
+        
+        # Update x position for next button
+        x += button_width + padding
+
+    add_button = customtkinter.CTkButton(
+        master=canvas,
+        text='+',
+        font=('Alte Haas Grotesk', 18, 'bold'),
+        width=28, height=28,
+        corner_radius=7,
+        bg_color='#e7e7e7',
+        border_color='#e7e7e7',
+        border_spacing=0,
+        border_width=0
+    )
+
+    add_button.place(x=x, y=y, anchor='nw')
+    
+    return button_list
+
+update_parameters(canvas, parameters)
 # -----------------------------End-----------------------------
 
 # ---------------------------STT Tab---------------------------
