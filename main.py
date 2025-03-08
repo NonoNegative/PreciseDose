@@ -104,7 +104,9 @@ halt_button.place(x=((screen_width+drawer_width)//2)-63, y=5, anchor=tk.NE)
 patient = random.choice(os.listdir("content\\patients")) # Select a random patient
 patient_id = int(patient.rstrip(".json"))
 patient = json.load(open(f"content\\patients\\{patient}")) # Parse JSON to Dictionary
+parameter_map = patient['parameters']
 print(colored(" INFO ", 'black', 'on_yellow'),  f"Selected Patient: {patient['name']} [ID: {patient_id}] from path" , colored(f"'content\\patients\\{patient_id}.json'", 'dark_grey'))
+
 
 # Update Profile
 canvas.create_line(150, 65, 387, 65, fill='White', width=1); canvas.create_line(150, 105, 387, 105, fill='White', width=1)
@@ -142,43 +144,32 @@ canvas.create_line(13, 430, 397, 430, fill='#e7e7e7', width=4)
 # -----------------------------End-----------------------------
 
 # ----------------------Captured Parameters--------------------
-json_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\json.png"),
-                                  dark_image=Image.open("assets\\icons\\json.png"),
-                                  size=(20, 20))
+button_list = []
 
-json_button = customtkinter.CTkButton(master=canvas, image=json_icon, text='Edit Raw Hashmap', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=385, height=33, corner_radius=8, bg_color='White', border_color='White')
-json_button.place(x=12, y=486)
+def update_parameters(start_x=23, start_y=580, row_spacing=13, padding=5, max_width=391):
 
-delete_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\delete.png"),
-                                  dark_image=Image.open("assets\\icons\\delete.png"),
-                                  size=(20, 20))
+    global button_list
 
-delete_button = customtkinter.CTkButton(master=canvas, image=delete_icon, text='Clear All Elements', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=385, height=33, corner_radius=8, bg_color='White', border_color='White')
-delete_button.place(x=12, y=526)
+    for i in button_list:
+        i.destroy()
 
-parameters = {
-    'age': 20,
-    'height': 180,
-    'gender': 'Male',
-    'heartrate': 60,
-    'blood pressure': '120/60'
-}
-
-def update_parameters(canvas, parameters, start_x=23, start_y=580, row_spacing=13, padding=5, max_width=391):
     x, y = start_x, start_y 
     button_height = 20 
-    button_list = [] 
     
-    for key, value in parameters.items():
+    for key, value in parameter_map.items():
+        
+        if value == 0 or value == '' or value == None:
+            break
+
         # Create a segmented button with key and value as options
         element = customtkinter.CTkSegmentedButton(
             master=canvas,
-            values=[f' {key.title()} ', f' {value} '],
+            values=[f' {key} ', f' {value} '],
             font=('Alte Haas Grotesk', 14, 'bold'),
             corner_radius=7,
             height=button_height
         )
-        element.set(f' {key.title()} ')
+        element.set(f' {key} ')
         
         # Measure button width
         canvas.update_idletasks()
@@ -204,14 +195,46 @@ def update_parameters(canvas, parameters, start_x=23, start_y=580, row_spacing=1
         bg_color='#e7e7e7',
         border_color='#e7e7e7',
         border_spacing=0,
-        border_width=0
+        border_width=0,
+        command= lambda: ext_funcs.add_parameter(parameter_map, update_parameters)
     )
 
     add_button.place(x=x, y=y, anchor='nw')
+    button_list.append(add_button)
     
     return button_list
 
-update_parameters(canvas, parameters)
+def clear_parameters():
+    global parameter_map
+    parameter_map = {
+        "Age": 0,
+        "Gender": 0,
+        "Height": 0,
+        "Weight": 0,
+        "BMI": 0,
+        "Heartrate": 0,
+        "SPO2": 0,
+        "Blood Pressure": 0,
+        "Temperature": 0 
+    }
+    update_parameters()
+
+json_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\json.png"),
+                                  dark_image=Image.open("assets\\icons\\json.png"),
+                                  size=(20, 20))
+
+json_button = customtkinter.CTkButton(master=canvas, image=json_icon, text='Edit Raw Hashmap', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=385, height=33, corner_radius=8, bg_color='White', border_color='White')
+json_button.place(x=12, y=486)
+
+delete_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\delete.png"),
+                                  dark_image=Image.open("assets\\icons\\delete.png"),
+                                  size=(20, 20))
+
+delete_button = customtkinter.CTkButton(master=canvas, image=delete_icon, text='Clear All Elements', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=385, height=33, corner_radius=8, bg_color='White', border_color='White', command=clear_parameters)
+delete_button.place(x=12, y=526)
+
+update_parameters()
+
 # -----------------------------End-----------------------------
 
 # ---------------------------STT Tab---------------------------

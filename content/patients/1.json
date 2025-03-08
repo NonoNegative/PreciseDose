@@ -2,5 +2,16 @@
     "name": "Example Patient 1",
     "gender": "Male",
     "age": 36,
-    "case": "Sudden cardiac arrest (unknown time), might have been due to alcohol abuse."
+    "case": "Sudden cardiac arrest (unknown time), might have been due to alcohol abuse.",
+    "parameters": {
+        "Age": 36,
+        "Gender": "Male",
+        "Height": 175,
+        "Weight": 80,
+        "BMI": 26.1,
+        "Heartrate": 40,
+        "SPO2": 85,
+        "Blood Pressure": "70/40",
+        "Temperature": 36.5 
+    }
 }

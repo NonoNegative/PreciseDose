@@ -4,6 +4,7 @@ import tkinter as tk
 from shared.tkgif import GifLabel
 from datetime import datetime
 from shared.CTkPDFViewer import *
+from tkinter import messagebox
 
 def create_top_level(title, width=600, height=600, load_captions=['Loading', 2000], bg_color='#f0f0f0'):
     image_toplevel = tk.Toplevel(); image_toplevel.wm_attributes('-toolwindow', 'true')
@@ -91,3 +92,51 @@ def open_pdf(title, location):
     pdf_frame = CTkPDFViewer(my_top, file=location, page_width=1000, page_height=1200)
     pdf_frame.pack(fill="both", expand=True, padx=10, pady=10)
     my_top.mainloop()
+
+def add_parameter(parameter_map, update_fn):
+    my_top = create_top_level('Add New Parameter', 400, 205, load_captions=['Please wait...', 200])
+    my_top.canvas.create_text(200, 30, text='Add New Parameter', font=('Century Gothic', 17, 'bold'), fill='Grey40')
+    my_top.canvas.create_line(10, 60, 390, 60, fill='#3B8ED0', width=4)
+    my_top.canvas.create_text(190, 90, text='Choose Parameter :', font=('Alte Haas Grotesk', 12, 'bold'), fill='Grey50', anchor=tk.E)
+    my_top.canvas.create_text(190, 125, text='Enter Value :', font=('Alte Haas Grotesk', 12, 'bold'), fill='Grey50', anchor=tk.E)
+    my_top.canvas.create_line(10, 150, 390, 150, fill='#3B8ED0', width=4)
+
+    combobox_1 = customtkinter.CTkComboBox(
+        my_top.canvas, values=["Age", "Gender", "Height", "Weight", "BMI", "Heartrate", "SPO2", "Blood Pressure", "Temperature"],
+        width=160, height=25, font=('Alte Haas Grotesk', 12), state='readonly', corner_radius=7
+    )
+    combobox_1.place(x=200, y=90, anchor=tk.W)
+    combobox_1.set("Select...")
+
+    val_entry = customtkinter.CTkEntry(
+        master=my_top.canvas, placeholder_text="Nil", corner_radius=7, width=160, height=25,
+        bg_color='White', font=('Alte Haas Grotesk', 12)
+    )
+    val_entry.place(x=200, y=125, anchor=tk.W)
+
+    def save():
+        p = combobox_1.get()
+        v = val_entry.get()
+        if p != "Select..." and p and v:
+            parameter_map[p] = v
+            print(parameter_map)
+            update_fn() 
+        else:
+            my_top.attributes('-topmost', False)
+            messagebox.showerror('Error!', 'Invalid or incomplete parameter/value passed!')
+            my_top.attributes('-topmost', True)
+            return None
+        my_top.destroy()
+
+    save_button = customtkinter.CTkButton(
+        my_top, height=30, corner_radius=6, text='Save', font=('Alte Haas Grotesk', 15, 'bold'),
+        text_color='White', width=100, command=save
+    )
+    save_button.place(x=390, y=165, anchor=tk.NE)
+
+    discard_button = customtkinter.CTkButton(
+        my_top, height=30, corner_radius=6, text='Close', font=('Alte Haas Grotesk', 15, 'bold'),
+        text_color='White', width=100, fg_color='IndianRed2', hover_color='IndianRed4',
+        command=my_top.destroy  # Use `command` instead of `function`
+    )
+    discard_button.place(x=280, y=165, anchor=tk.NE)
