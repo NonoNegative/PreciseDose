@@ -87,9 +87,9 @@ def infer_image(img_path, window_name, size_x=None, size_y=None, attached_note="
     discard_button.place(x=width-120, y=height+entry_height+10, anchor=tk.NE)
     my_top.canvas.create_text(12, height+entry_height+40, text="Timestamp: "+ str(datetime.now()), font=('Cascadia Code', 10), fill='Grey60', anchor=tk.SW)
 
-def open_pdf(title, location):
+def open_pdf(title, location, p_width=1000, p_height=1414):
     my_top = create_top_level(title, 1000, 900, load_captions=['Reading Document...', 1000, 'Opening in Viewer...', 400])
-    pdf_frame = CTkPDFViewer(my_top, file=location, page_width=1000, page_height=1200)
+    pdf_frame = CTkPDFViewer(my_top, file=location, page_width=p_width, page_height=p_height)
     pdf_frame.pack(fill="both", expand=True, padx=10, pady=10)
     my_top.mainloop()
 
@@ -140,3 +140,13 @@ def add_parameter(parameter_map, update_fn):
         command=my_top.destroy  # Use `command` instead of `function`
     )
     discard_button.place(x=280, y=165, anchor=tk.NE)
+
+def check_vitals(vitals):
+    my_top = create_top_level('Vitals Check', 600, 600, ['Please Wait...', 500, 'Checking Body Vitals...', 2000, 'Processing...', 1000])
+    vitals_overlay = customtk.create_tk_image('assets\\static\\vitals_overlay.png', 600, 600)
+    my_top.canvas.create_image(0, 0, anchor=tk.NW, image=vitals_overlay)
+    my_top.canvas.image = vitals_overlay
+    pos_dict = {"Temperature":[280, 254, ' \u00b0C'], "Heartrate":[746, 254, ' BPM'], "SPO2":[277, 545, '%'], "Blood Pressure":[746, 545, ''], "Respiratory Rate":[272, 834, ' Breaths/Min']}
+    for key, (x, y, z) in pos_dict.items():
+        value = vitals.get(key, "N/A")
+        my_top.canvas.create_text(x*0.6, y*0.6, text=str(value)+z, font=('Alte Haas Grotesk', 12, 'bold'), fill='grey30', anchor='nw')

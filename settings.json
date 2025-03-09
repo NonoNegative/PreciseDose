@@ -1,5 +1,24 @@
 {
     "time_limit": 300,
+
     "theme": "blue",
-    "drugs": ["Epinephrine", "Vasopressin", "Atropine", "Lidocaine", "Sodium Bicarbonate"] 
+
+    "drugs": ["Epinephrine", "Vasopressin", "Atropine", "Lidocaine", "Sodium Bicarbonate"],
+
+    "administer_methods" : {
+        "Enteral Route" : [
+            "Oral (PO)",
+            "Sublingual (SL)"
+        ],
+        "Parenteral Route" : [
+            "Intravenous (IV) Bolus",
+            "Intravenous (IV) Infusion",
+            "Intramuscular (IM)",
+            "Subcutaenous (SC)"
+        ],
+        "Topical Route" : [
+            "Nasal",
+            "Dermal"
+        ]
+    }
 }
