@@ -5,7 +5,7 @@
 
     "age": 36,
 
-    "case": "Sudden cardiac arrest (unknown time), might have been due to alcohol abuse.",
+    "case": "Sudden cardiac arrest (<10 minutes ago). Reason is unknown.",
 
     "parameters": {
         "Age": 36,
