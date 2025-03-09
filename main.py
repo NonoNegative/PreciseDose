@@ -11,6 +11,7 @@ from shared.transforms import RGBTransform
 from datetime import datetime
 from functools import partial
 from tkinter import messagebox
+from shared.action_history import dll as action_history
 import time
 import shared.functions as ext_funcs
 # -------------------End-------------------
@@ -244,7 +245,6 @@ delete_button = customtkinter.CTkButton(master=canvas, image=delete_icon, text='
 delete_button.place(x=12, y=526)
 
 update_parameters()
-
 # -----------------------------End-----------------------------
 
 # ---------------------------STT Tab---------------------------
@@ -340,13 +340,13 @@ canvas.create_text(1766, 993, text='None yet.', font=('Alte Haas Grotesk', 12), 
 pointers = customtk.create_tk_image('assets\\static\\pointers.png', 1920, 1080)
 canvas.create_image(0, 0, image=pointers, anchor=tk.NW, tags='interactive')
 
-defib = customtkinter.CTkButton(canvas, corner_radius=0, text='Attach Defibrilator', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=170)
+defib = customtkinter.CTkButton(canvas, corner_radius=0, text='Attach Defibrilator', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=170, command= lambda: action_history.append(['Defibrilator shocked', '10 kJ']))
 defib.place(x=1402, y=723, anchor=tk.N)
 
-iv = customtkinter.CTkButton(canvas, corner_radius=0, text='IV Status', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=100)
+iv = customtkinter.CTkButton(canvas, corner_radius=0, text='IV Status', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=100, command= lambda: action_history.append(['Checked IV status']))
 iv.place(x=1483, y=361, anchor=tk.W)
 
-cpr = customtkinter.CTkButton(canvas, corner_radius=0, text='CPR', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=70)
+cpr = customtkinter.CTkButton(canvas, corner_radius=0, text='CPR', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=70, command= lambda: action_history.append(['Administered CPR', '2 mins']))
 cpr.place(x=1228, y=547, anchor=tk.W)
 
 vitals = customtkinter.CTkButton(canvas, corner_radius=0, text='Check Vitals', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=140, command= lambda: ext_funcs.check_vitals(parameter_map))

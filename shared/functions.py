@@ -5,6 +5,7 @@ from shared.tkgif import GifLabel
 from datetime import datetime
 from shared.CTkPDFViewer import *
 from tkinter import messagebox
+from shared.action_history import dll as action_history
 
 def create_top_level(title, width=600, height=600, load_captions=['Loading', 2000], bg_color='#f0f0f0'):
     image_toplevel = tk.Toplevel(); image_toplevel.wm_attributes('-toolwindow', 'true')
@@ -39,16 +40,6 @@ def create_top_level(title, width=600, height=600, load_captions=['Loading', 200
         image_toplevel.mainloop() 
 
     return image_toplevel
-
-def check_vitals(vitals):
-    my_top = create_top_level('Vitals Check', 600, 600, ['Please Wait...', 500, 'Checking Body Vitals...', 2000, 'Processing...', 1000])
-    vitals_overlay = customtk.create_tk_image('assets\\static\\vitals_overlay.png', 600, 600)
-    my_top.canvas.create_image(0, 0, anchor=tk.NW, image=vitals_overlay)
-    my_top.canvas.image = vitals_overlay
-    pos_dict = {"Temp":[280, 254], "Pulse":[746, 254], "SPO2":[277, 545], "BP":[746, 545], "Resp":[272, 834]}
-    for key, (x, y) in pos_dict.items():
-        value = vitals.get(key, "N/A")
-        my_top.canvas.create_text(x*0.6, y*0.6, text=value, font=('Alte Haas Grotesk', 12, 'bold'), fill='grey30', anchor='nw')
 
 font=('Alte Haas Grotesk', 12)
 def get_label_height(text, width):
@@ -142,6 +133,7 @@ def add_parameter(parameter_map, update_fn):
     discard_button.place(x=280, y=165, anchor=tk.NE)
 
 def check_vitals(vitals):
+    action_history.append(['Checked Vitals', str(datetime.now())])
     my_top = create_top_level('Vitals Check', 600, 600, ['Please Wait...', 500, 'Checking Body Vitals...', 2000, 'Processing...', 1000])
     vitals_overlay = customtk.create_tk_image('assets\\static\\vitals_overlay.png', 600, 600)
     my_top.canvas.create_image(0, 0, anchor=tk.NW, image=vitals_overlay)
