@@ -301,7 +301,15 @@ drug_name_label.place(x=1745, y=437, anchor=tk.NW)
 drug_desc_label = customtkinter.CTkLabel(master=canvas, text="Select a drug to view its description.", font=('Alte Haas Grotesk', 12), width=160, height=74, bg_color='White', fg_color="White", wraplength=162, justify='left', anchor=tk.NW, text_color='Grey20')
 drug_desc_label.place(x=1747, y=464, anchor=tk.NW)
 
+none_tk_image = customtk.create_tk_image('assets\\icons\\none.png', 80, 80)
+
+drug_image = tk.Label(canvas, background='White', fg='White', borderwidth=0, image=none_tk_image)
+drug_image.place(x=1642, y=449, anchor=tk.NW)
+
 def update_calibrate_tab(drug):
+    global drug_tk_image
+    drug_tk_image = customtk.create_tk_image(f'content\\medicines\\{drug}.png', 80, 80)
+    drug_image.config(image=drug_tk_image)
     drug_name_label.configure(text=drug)
     drug_desc_label.configure(text=drug_dict[drug]['description'])
 # -----------------------------End-----------------------------
