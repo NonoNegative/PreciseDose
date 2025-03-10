@@ -108,7 +108,6 @@ interactive_button = customtkinter.CTkButton(canvas, height=30, corner_radius=10
 interactive_button.place(x=((screen_width)//2)+35, y=5, anchor=tk.NE)
 
 canvas.create_line(((screen_width)//2)+43, 4, ((screen_width)//2)+43, drawer_height-4, fill='#e3e3e3', width=4)
-
 # ------------------------End------------------------
 
 # -----------------Patient Intialize-----------------
@@ -116,6 +115,7 @@ patient = random.choice(os.listdir("content\\patients")) # Select a random patie
 patient_id = int(patient.rstrip(".json"))
 patient = json.load(open(f"content\\patients\\{patient}")) # Parse JSON to Dictionary
 parameter_map = patient['parameters']
+op_procedure = patient['graph']
 print(colored(" INFO ", 'black', 'on_yellow'),  f"Selected Patient: {patient['name']} [ID: {patient_id}] from path" , colored(f"'content\\patients\\{patient_id}.json'", 'dark_grey'))
 
 
@@ -148,7 +148,7 @@ full_profile_button.place(x=12, y=265)
 medical_records_button = customtkinter.CTkButton(master=canvas, image=medical_records_icon, text='Medical\nHistory', font=('Alte Haas Grotesk', 15, 'bold'), compound=tk.TOP, width=120, height=150, corner_radius=12, bg_color='White', border_color='White', command= lambda: ext_funcs.open_pdf('Patient History', 'content\\documents\\1_history.pdf'))
 medical_records_button.place(x=145, y=265)
 
-action_history_button = customtkinter.CTkButton(master=canvas, image=action_history_icon, text='Action\nHistory', font=('Alte Haas Grotesk', 15, 'bold'), compound=tk.TOP, width=120, height=150, corner_radius=12, bg_color='White', border_color='White')
+action_history_button = customtkinter.CTkButton(master=canvas, image=action_history_icon, text='Action\nHistory', font=('Alte Haas Grotesk', 15, 'bold'), compound=tk.TOP, width=120, height=150, corner_radius=12, bg_color='White', border_color='White', command=lambda: ext_funcs.show_action_history(op_procedure))
 action_history_button.place(x=277, y=265)
 
 canvas.create_line(13, 430, 397, 430, fill='#e7e7e7', width=4)
@@ -285,7 +285,6 @@ def generate_tab_1():
         y = y + 38
     root.update()
     drug_list_canvas.configure(scrollregion=drug_list_canvas.bbox("all"))
-
 # -----------------------------End-----------------------------
 
 # ------------------------Calibrate Tab------------------------

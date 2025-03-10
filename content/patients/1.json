@@ -5,7 +5,7 @@
 
     "age": 36,
 
-    "case": "Sudden cardiac arrest (<10 minutes ago). Reason is unknown.",
+    "case": "Sudden cardiac arrest [<10 minutes ago]. Reason is unknown.",
 
     "parameters": {
         "Age": 36,
@@ -18,5 +18,28 @@
         "Blood Pressure": "70/40",
         "Temperature": 36.5,
         "Respiratory Rate": 0
+    },
+
+    "graph": {
+        "Start CPR": {"pos": [480, 50], "text": "Start CPR\nGive oxygen\nAttach monitor/defibrillator", "color": "lightblue", "next": [["Rhythm shockable?", ""]]},
+        "Rhythm shockable?": {"pos": [480, 150], "text": "Rhythm shockable?", "color": "#FF9999", "next": [["VF/VT", "Yes"], ["Asystole/PEA", "No"]]},
+
+        "VF/VT": {"pos": [350, 250], "text": "VF/VT\nGive shock", "color": "lightblue", "next": [["CPR 2 min [VF/VT]", ""]]},
+        "CPR 2 min [VF/VT]": {"pos": [350, 350], "text": "CPR 2 min [VF/VT]\nIO/IV access", "color": "lightblue", "next": [["Rhythm shockable? [VF]", ""]]},
+        "Rhythm shockable? [VF]": {"pos": [350, 450], "text": "Rhythm shockable?", "color": "#FF9999", "next": [["Shock [again]", "Yes"], ["CPR 2 min [Epinephrine]", "No"]]},
+        "Shock [again]": {"pos": [100, 520], "text": "Shock [again]\nGive shock", "color": "lightblue", "next": [["CPR 2 min [Epinephrine]", ""]]},
+        "CPR 2 min [Epinephrine]": {"pos": [350, 570], "text": "CPR 2 min\nEpinephrine [Every 3-5 min]\nConsider advanced airway", "color": "lightblue", "next": [["Rhythm shockable? [VF2]", ""]]},
+        "Rhythm shockable? [VF2]": {"pos": [350, 680], "text": "Rhythm shockable?", "color": "#FF9999", "next": [["Shock [third time]", "Yes"], ["CPR 2 min [Amiodarone]", "No"]]},
+        "Shock [third time]": {"pos": [580, 750], "text": "Shock [third time]\nGive shock", "color": "lightblue", "next": [["CPR 2 min [Amiodarone]", ""]]},
+        "CPR 2 min [Amiodarone]": {"pos": [350, 830], "text": "CPR 2 min [Amiodarone]\nAmiodarone\nTreat reversible causes", "color": "lightblue", "next": [["Rhythm shockable? [VF3]", ""]]},
+        "Rhythm shockable? [VF3]": {"pos": [100, 950], "text": "Rhythm shockable?", "color": "#FF9999", "next": [["Shock [again]", "Yes"], ["End", "No"]]},
+
+        "Asystole/PEA": {"pos": [800, 250], "text": "Asystole/PEA", "color": "lightblue", "next": [["CPR 2 min [PEA]", ""]]},
+        "CPR 2 min [PEA]": {"pos": [800, 350], "text": "CPR 2 min [PEA]\nIO/IV access\nEpinephrine [Every 3-5 min]\nConsider advanced airway", "color": "lightblue", "next": [["Rhythm shockable? [PEA]", ""]]},
+        "Rhythm shockable? [PEA]": {"pos": [800, 450], "text": "Rhythm shockable?", "color": "#FF9999", "next": [["VF/VT", "Yes"], ["CPR 2 min [Reversible Causes]", "No"]]},
+        "CPR 2 min [Reversible Causes]": {"pos": [800, 600], "text": "CPR 2 min [Reversible Causes]\nTreat reversible causes", "color": "lightblue", "next": [["Rhythm shockable? [PEA2]", ""]]},
+        "Rhythm shockable? [PEA2]": {"pos": [800, 800], "text": "Rhythm shockable?", "color": "#FF9999", "next": [["VF/VT", "Yes"], ["End", "No"]]},
+
+        "End": {"pos": [480, 950], "text": "End\nCheck pulse\nPost-cardiac arrest care", "color": "lightblue", "next": []}
     }
 }

@@ -142,3 +142,110 @@ def check_vitals(vitals):
     for key, (x, y, z) in pos_dict.items():
         value = vitals.get(key, "N/A")
         my_top.canvas.create_text(x*0.6, y*0.6, text=str(value)+z, font=('Alte Haas Grotesk', 12, 'bold'), fill='grey30', anchor='nw')
+
+def show_action_history(op_procedure):
+    my_top = create_top_level('Action History', 1000, 950, load_captions=['Loading...', 500])
+    tabview_1 = customtkinter.CTkTabview(master=my_top.canvas, width=960, height=930, bg_color='#f0f0f0', corner_radius=7)
+    tabview_1._segmented_button.configure(font=('Alte Haas Grotesk', 15, 'bold'))
+    tabview_1.place(x=20, y=0)
+    tabview_1.add("Your Action History"); tabview_1.add("Operational Procedure")
+
+    tab_1_canvas = tk.Canvas(tabview_1.tab("Your Action History"), width=960, height=930, highlightthickness=0, background=tabview_1.cget('fg_color')[0])
+    tab_1_canvas.place(x=0, y=0)
+    scroll_bar = customtkinter.CTkScrollbar(tabview_1.tab("Your Action History"), command=tab_1_canvas.yview, height=880)
+    tab_1_canvas.config(yscrollcommand=scroll_bar.set)
+    scroll_bar.place(x=930, y=-4)
+
+    # Visualization of the linked list
+    y_position = 40  # Initial Y position
+    x_position = 470  # X position for buttons
+    node = action_history.head  # Start from the head of the linked list
+
+    tab_1_canvas.create_line(500, 0, 500, 40, width=4, fill=tabview_1.cget('fg_color')[0])
+
+    while node:
+        values = node.data  # Extract list from linked list node
+        if values:
+            element = customtkinter.CTkSegmentedButton(
+                master=tab_1_canvas,
+                values=values,
+                font=('Alte Haas Grotesk', 14, 'bold'),
+                corner_radius=7,
+                height=40,
+                state=tk.DISABLED,
+                text_color_disabled='White',
+                selected_color='Indianred2'
+            )
+            element.set(values[0])  # Set first element as selected value
+            tab_1_canvas.create_window(x_position, y_position, window=element, anchor=tk.CENTER)
+            
+            # Draw an arrow to the next node
+            if node.next:
+                tab_1_canvas.create_line(
+                    x_position, y_position + 20,  # Start of the arrow (right side of the button)
+                    x_position, y_position + 80,  # Middle point of the arrow
+                    arrow=tk.LAST, fill="black", width=4
+                )
+            
+            y_position += 100  # Move down for the next element
+        
+        node = node.next  # Move to the next node
+
+    tab_1_canvas.create_line(500, y_position, 500, y_position+10, width=4, fill=tabview_1.cget('fg_color')[0])
+    
+    my_top.update()
+    tab_1_canvas.configure(scrollregion=tab_1_canvas.bbox("all"))
+
+    tab_2_canvas = tk.Canvas(tabview_1.tab("Operational Procedure"), width=960, height=930, highlightthickness=0, background=tabview_1.cget('fg_color')[0])
+    tab_2_canvas.place(x=0, y=0)
+    scroll_bar_2 = customtkinter.CTkScrollbar(tabview_1.tab("Operational Procedure"), command=tab_2_canvas.yview, height=880)
+    tab_2_canvas.config(yscrollcommand=scroll_bar_2.set)
+    scroll_bar_2.place(x=930, y=-4)
+
+    def draw_operational_procedure(canvas):
+        node_width, node_height = 180, 60
+
+        def draw_node(text, position, color):
+            x, y = position
+            width, height = node_width, node_height
+            canvas.create_rectangle(x - width // 2, y - height // 2, x + width // 2, y + height // 2, fill=color, outline="black")
+            canvas.create_text(x, y, text=text, font=("Arial", 8, "bold"), width=width - 10)
+
+        def draw_edge(start, end, decision_text):
+            x1, y1 = start
+            x2, y2 = end
+            dx, dy = x2 - x1, y2 - y1
+
+            length = (dx**2 + dy**2) ** 0.5
+            if length == 0:
+                return
+
+            ux, uy = dx / length, dy / length
+            start_x = x1 + ux * (node_width // 2 + 5)
+            start_y = y1 + uy * (node_height // 2 + 5)
+            end_x = x2 - ux * (node_width // 2 + 5)
+            end_y = y2 - uy * (node_height // 2 + 5)
+
+            canvas.create_line(start_x, start_y, end_x, end_y, arrow=tk.LAST, width=2)
+
+            if decision_text:
+                circle_x, circle_y = (start_x + end_x) / 2, (start_y + end_y) / 2
+                radius = 12
+                canvas.create_oval(circle_x - radius, circle_y - radius, circle_x + radius, circle_y + radius, fill="lightgrey", outline="black")
+                canvas.create_text(circle_x, circle_y, text=decision_text, font=("Arial", 8, "bold"))
+
+        graph = op_procedure
+
+        for node, data in graph.items():
+            for next_node, decision_text in data["next"]:
+                draw_edge(data["pos"], graph[next_node]["pos"], decision_text)
+
+        for node, data in graph.items():
+            draw_node(data["text"], data["pos"], data["color"])
+
+        canvas.create_line(0, 0, 0, -1, width=0)  # Top padding
+        canvas.create_line(0, 1040, 0, 1041, width=0)  # Bottom padding
+
+        canvas.configure(scrollregion=canvas.bbox("all"))
+
+    draw_operational_procedure(tab_2_canvas)
