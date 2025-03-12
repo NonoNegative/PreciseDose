@@ -6,6 +6,7 @@ from datetime import datetime
 from shared.CTkPDFViewer import *
 from tkinter import messagebox
 from shared.action_history import dll as action_history
+from shared.onnx_predict import predict_dosage
 
 def create_top_level(title, width=600, height=600, load_captions=['Loading', 2000], bg_color='#f0f0f0'):
     image_toplevel = tk.Toplevel(); image_toplevel.wm_attributes('-toolwindow', 'true')
@@ -249,3 +250,115 @@ def show_action_history(op_procedure):
         canvas.configure(scrollregion=canvas.bbox("all"))
 
     draw_operational_procedure(tab_2_canvas)
+
+def temp_untop(win, func):
+    win.attributes('-topmost', False)
+    if func() == True:
+        win.attributes('-topmost', True)
+        return True
+    win.attributes('-topmost', True)
+
+def run_simulation(parameter_map, drug, params, root_canvas):
+    global sim_static
+    my_top = create_top_level('Calibration Results', 600, 525, ["Calibrating...", 500])
+    sim_static = customtk.create_tk_image('assets\\static\sim_static.png', 600, 600)
+    my_top.canvas.create_image(0, 0, image=sim_static, anchor=tk.NW)
+    start_x=30; start_y=60; row_spacing=13; padding=5; max_width=570
+    x, y = start_x, start_y 
+    button_height = 20
+    found = 0
+    print(f"{drug} parameters: {params}")
+    my_input = [0, 0, 0, 0, 0, 0, 0]
+    for key, value in parameter_map.items():
+            found = found + 1
+            # Create a segmented button with key and value as options
+            element = customtkinter.CTkSegmentedButton(
+                master=my_top.canvas,
+                values=[f' {key} ', f' {value} '],
+                font=('Alte Haas Grotesk', 14, 'bold'),
+                corner_radius=7,
+                height=button_height
+            )
+
+            if value == 0 or value == '' or value == None:
+                element.configure(values=[f' {key} ', 'Undef.'], selected_color='IndianRed3')
+                found = found - 1
+            else:
+                try:
+                    if key == 'Gender':
+                        if value == 'Female':
+                            my_input[0] = 1 
+                        else:
+                            my_input[0] = 0
+                    elif key == 'Age':
+                        my_input[1] = float(value)
+                    elif key == 'Blood Pressure':
+                        bp = value.split('/')
+                        my_input[2] = float(bp[0])
+                        my_input[3] = float(bp[1])
+                    elif key == 'BMI':
+                        my_input[4] = float(value)
+                    elif key == 'Temperature':
+                        my_input[5] = float(value)
+                    elif key == 'SPO2':
+                        my_input[6] = float(value)
+                except Exception:
+                    pass
+                    
+            element.set(f' {key} ')
+            
+            # Measure button width
+            my_top.canvas.update_idletasks()
+            button_width = element.winfo_reqwidth()
+            
+            # If the next button exceeds max_width, move to the next row
+            if x + button_width > max_width:
+                x = start_x 
+                y += button_height + row_spacing
+ 
+            element.place(x=x, y=y, anchor='nw')
+            # Update x position for next button
+            x += button_width + padding
+
+    my_top.canvas.create_text(30, 20, text=f'Found {found} parameters.', fill='Grey30', font=('Alte Haas Grotesk', 15, 'bold'), anchor=tk.NW)
+    my_top.canvas.create_text(30, 195, text=f"{drug}: Clearance rate, Dosing Interval & Bioavailability", fill='Grey30', font=('Alte Haas Grotesk', 12, 'bold'), anchor=tk.NW)
+
+    x=30; y=230
+    for key, value in params.items():
+            found = found + 1
+            # Create a segmented button with key and value as options
+            element = customtkinter.CTkSegmentedButton(
+                master=my_top.canvas,
+                values=[f'   {key}   ', f' {value} '],
+                font=('Alte Haas Grotesk', 14, 'bold'),
+                corner_radius=7,
+                height=button_height+20,
+                selected_color='IndianRed2'
+            )
+            element.set(f'   {key}   ')
+            my_top.canvas.update_idletasks()
+            button_width = element.winfo_reqwidth()
+            element.place(x=x, y=y, anchor='nw')
+            # Update x position for next button
+            x += button_width + padding
+
+    #def save_results():
+    predicted = 0.0
+    if my_input != [0, 0, 0, 0, 0, 0, 0]:
+        predicted = float(predict_dosage(my_input))
+    calibrated = abs( ( predicted * params['CL'] * params['tau'] ) / params['F'])
+
+    my_top.canvas.create_text(378, 369, text=f"{predicted} mL", font=('Alte Haas Grotesk', 14, 'bold'), fill='Grey40', anchor=tk.CENTER)
+    my_top.canvas.create_text(378, 419, text=f"{calibrated} mL", font=('Alte Haas Grotesk', 14, 'bold'), fill='Grey40', anchor=tk.CENTER)
+
+    def save():
+        action_history.append([drug, f"Predicted dosage: {round(predicted, 3)} mL"])
+        action_history.append([drug, f"Calibrated dosage: {round(calibrated, 3)} mL"])
+        root_canvas.delete('Sim_results')
+        root_canvas.create_text(1643, 649, text=f'{drug}: {params}\n\nPredicted Dosage: {round(predicted, 3)} mL\nCalibrated Dosage: {round(calibrated, 3)} mL', tags='Sim_results', font=('Alte Haas Grotesk', 11, 'bold'), anchor=tk.NW, width=255, fill='Grey35')
+        my_top.destroy()
+
+    save_button = customtkinter.CTkButton(my_top, height=30, corner_radius=6, text='Save', font=('Alte Haas Grotesk', 15, 'bold'), text_color='White', width=100, command=save)
+    save_button.place(x=575, y=480, anchor=tk.NE)
+    discard_button = customtkinter.CTkButton(my_top, height=30, corner_radius=6, text='Discard', font=('Alte Haas Grotesk', 15, 'bold'), text_color='White', width=100, fg_color='IndianRed2', hover_color='IndianRed4', command = lambda: my_top.destroy() if temp_untop(my_top, lambda: messagebox.askyesno("Discard changes?", "Are you sure you want to discard your changes?")) else None)
+    discard_button.place(x=465, y=480, anchor=tk.NE)

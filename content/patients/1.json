@@ -3,20 +3,20 @@
 
     "gender": "Male",
 
-    "age": 36,
+    "age": 17,
 
     "case": "Sudden cardiac arrest [<10 minutes ago]. Reason is unknown.",
 
     "parameters": {
-        "Age": 36,
+        "Age": 17,
         "Gender": "Male",
         "Height": 175,
         "Weight": 80,
         "BMI": 26.1,
         "Heartrate": 40,
         "SPO2": 85,
-        "Blood Pressure": "70/40",
-        "Temperature": 36.5,
+        "Blood Pressure": "53/98",
+        "Temperature": 97.5,
         "Respiratory Rate": 0
     },
 
