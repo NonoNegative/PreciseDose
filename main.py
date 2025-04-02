@@ -17,7 +17,7 @@ if __name__ == '__main__':
     import shared.functions as ext_funcs
     import tkinter.scrolledtext as st
 
-    debug = False
+    debug = True
     if not debug:
         print("Loading STT model and LLM (Llama 3.2) model... Please wait...")
         from RealtimeSTT import AudioToTextRecorder
