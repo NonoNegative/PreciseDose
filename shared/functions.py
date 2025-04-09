@@ -258,7 +258,13 @@ def temp_untop(win, func):
         return True
     win.attributes('-topmost', True)
 
-def run_simulation(parameter_map, drug, params, root_canvas):
+def run_simulation(parameter_map, drug, params, root_canvas, onnx):
+
+    if onnx == None:
+        return None
+    elif  onnx[0] == None or onnx[1] == None:
+        return None
+
     global sim_static
     my_top = create_top_level('Calibration Results', 600, 525, ["Calibrating...", 500])
     sim_static = customtk.create_tk_image('assets\\static\sim_static.png', 600, 600)
@@ -268,7 +274,7 @@ def run_simulation(parameter_map, drug, params, root_canvas):
     button_height = 20
     found = 0
     print(f"{drug} parameters: {params}")
-    my_input = [0, 0, 0, 0, 0, 0, 0]
+    my_input = [0, 0, 0, 0, 0, 0]
     for key, value in parameter_map.items():
             found = found + 1
             # Create a segmented button with key and value as options
@@ -345,11 +351,10 @@ def run_simulation(parameter_map, drug, params, root_canvas):
     #def save_results():
     predicted = 0.0
     if my_input != [0, 0, 0, 0, 0, 0, 0]:
-        predicted = float(predict_dosage(my_input))
+        predicted = float(predict_dosage(my_input, onnx[0]))
     calibrated = abs( ( predicted * params['CL'] * params['tau'] ) / params['F'])
-
-    my_top.canvas.create_text(378, 369, text=f"{predicted} mL", font=('Alte Haas Grotesk', 14, 'bold'), fill='Grey40', anchor=tk.CENTER)
-    my_top.canvas.create_text(378, 419, text=f"{calibrated} mL", font=('Alte Haas Grotesk', 14, 'bold'), fill='Grey40', anchor=tk.CENTER)
+    my_top.canvas.create_text(378, 369, text=f"{predicted} {onnx[1]}", font=('Alte Haas Grotesk', 14, 'bold'), fill='Grey40', anchor=tk.CENTER)
+    my_top.canvas.create_text(378, 419, text=f"{calibrated} {onnx[1]}", font=('Alte Haas Grotesk', 14, 'bold'), fill='Grey40', anchor=tk.CENTER)
 
     def save():
         action_history.append([drug, f"Predicted dosage: {round(predicted, 3)} mL"])
@@ -362,3 +367,126 @@ def run_simulation(parameter_map, drug, params, root_canvas):
     save_button.place(x=575, y=480, anchor=tk.NE)
     discard_button = customtkinter.CTkButton(my_top, height=30, corner_radius=6, text='Discard', font=('Alte Haas Grotesk', 15, 'bold'), text_color='White', width=100, fg_color='IndianRed2', hover_color='IndianRed4', command = lambda: my_top.destroy() if temp_untop(my_top, lambda: messagebox.askyesno("Discard changes?", "Are you sure you want to discard your changes?")) else None)
     discard_button.place(x=465, y=480, anchor=tk.NE)
+
+def isfloat(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False
+
+def check_and_save_cpr(my_top, comp_rate, depth):
+    global cpr_yet
+    my_top.destroy()
+    if comp_rate == 'Select...' or depth.strip() == '' or not isfloat(depth):
+        messagebox.showerror("Error!", "Invalid or empty parameters passed!")
+    else:
+        action_history.append([f'Administered CPR', f'{depth} inches | Compression rate: {comp_rate}'])
+        messagebox.showinfo("CPR started", "CPR has been initiated.\n\nProcess will continue until ROSC.")
+        cpr_yet = True
+
+cpr_yet = False
+def CPR():
+    
+    if cpr_yet:
+        messagebox.showinfo("CPR Controls", "CPR is already being administered!")
+        return None
+    
+    my_top = create_top_level(f'CPR Controls', 400, 205, load_captions=['Please wait...', 200])
+    my_top.canvas.create_text(200, 30, text=f'Cardio-Pulmonary Resuscitation', font=("Century Gothic", 15, 'bold'), fill='Grey20')
+    my_top.canvas.create_line(10, 60, 390, 60, fill='#3B8ED0', width=4)
+    my_top.canvas.create_text(190, 90, text='Compression Rate :', font=('Alte Haas Grotesk', 12, 'bold'), fill='Grey50', anchor=tk.E)
+    my_top.canvas.create_text(190, 125, text='Depth (in.) :', font=('Alte Haas Grotesk', 12, 'bold'), fill='Grey50', anchor=tk.E)
+    my_top.canvas.create_line(10, 150, 390, 150, fill='#3B8ED0', width=4)
+
+    combobox_1 = customtkinter.CTkComboBox(
+        my_top.canvas, values=[
+                                "60/min",
+                                "80/min",
+                                "100/min",
+                                "120/min",
+                                "140/min",
+                            ],
+        width=160, height=25, font=('Alte Haas Grotesk', 12), state='readonly', corner_radius=7
+    )
+    combobox_1.place(x=200, y=90, anchor=tk.W)
+    combobox_1.set("Select...")
+
+    val_entry = customtkinter.CTkEntry(
+        master=my_top.canvas, placeholder_text="Nil", corner_radius=7, width=160, height=25,
+        bg_color='White', font=('Alte Haas Grotesk', 12)
+    )
+    val_entry.place(x=200, y=125, anchor=tk.W)
+
+    save_button = customtkinter.CTkButton(
+        my_top, height=30, corner_radius=6, text='Start CPR', font=('Alte Haas Grotesk', 15, 'bold'),
+        text_color='White', width=100, command=lambda: check_and_save_cpr(my_top, combobox_1.get(), val_entry.get())
+    )
+    save_button.place(x=390, y=165, anchor=tk.NE)
+
+    discard_button = customtkinter.CTkButton(
+        my_top, height=30, corner_radius=6, text='Cancel', font=('Alte Haas Grotesk', 15, 'bold'),
+        text_color='White', width=100, fg_color='IndianRed2', hover_color='IndianRed4',
+        command = lambda: my_top.destroy() if temp_untop(my_top, lambda: messagebox.askyesno("Discard changes?", "Are you sure you want to discard your changes?")) else None  # Use `command` instead of `function`
+    )
+    discard_button.place(x=280, y=165, anchor=tk.NE)
+
+attached_defib_yet = False
+def shock(my_top, num, energy):
+    global attached_defib_yet
+    my_top.destroy()
+    if num == 'Select...' or energy.strip() == '' or not energy.isnumeric():
+        messagebox.showerror("Error!", "Invalid or empty parameters passed!")
+    else:
+        if not attached_defib_yet:
+            action_history.append(['Attached Defibrillator', str(datetime.now())])
+        if num == '1':
+            num = 'once'
+        elif num == '2':
+            num = 'twice'
+        elif num == '3':
+            num = 'thrice'
+        elif num == '4':
+            num = '4 times'
+        action_history.append([f'Shocked Patient', f'{num.title()} | Energy: {energy}J'])
+        messagebox.showinfo("Defibrillator", f"Successfully shocked the patient {num} with {energy}J of energy.")
+        attached_defib_yet = True
+
+def defib():    
+    my_top = create_top_level(f'Defibrillator Controls', 400, 205, load_captions=['Please wait...', 200])
+    my_top.canvas.create_text(200, 30, text=f'Attach Defibrillator', font=("Century Gothic", 15, 'bold'), fill='Grey20')
+    my_top.canvas.create_line(10, 60, 390, 60, fill='#3B8ED0', width=4)
+    my_top.canvas.create_text(190, 90, text='Number of Shocks :', font=('Alte Haas Grotesk', 12, 'bold'), fill='Grey50', anchor=tk.E)
+    my_top.canvas.create_text(190, 125, text='Shock Energy (J) :', font=('Alte Haas Grotesk', 12, 'bold'), fill='Grey50', anchor=tk.E)
+    my_top.canvas.create_line(10, 150, 390, 150, fill='#3B8ED0', width=4)
+
+    combobox_1 = customtkinter.CTkComboBox(
+        my_top.canvas, values=[
+                                "1",
+                                "2",
+                                "3",
+                                "4",
+                            ],
+        width=160, height=25, font=('Alte Haas Grotesk', 12), state='readonly', corner_radius=7
+    )
+    combobox_1.place(x=200, y=90, anchor=tk.W)
+    combobox_1.set("Select...")
+
+    val_entry = customtkinter.CTkEntry(
+        master=my_top.canvas, placeholder_text="Nil", corner_radius=7, width=160, height=25,
+        bg_color='White', font=('Alte Haas Grotesk', 12)
+    )
+    val_entry.place(x=200, y=125, anchor=tk.W)
+
+    save_button = customtkinter.CTkButton(
+        my_top, height=30, corner_radius=6, text='Shock', font=('Alte Haas Grotesk', 15, 'bold'),
+        text_color='White', width=100, command=lambda: shock(my_top, combobox_1.get(), val_entry.get())
+    )
+    save_button.place(x=390, y=165, anchor=tk.NE)
+
+    discard_button = customtkinter.CTkButton(
+        my_top, height=30, corner_radius=6, text='Cancel', font=('Alte Haas Grotesk', 15, 'bold'),
+        text_color='White', width=100, fg_color='IndianRed2', hover_color='IndianRed4',
+        command = lambda: my_top.destroy() if temp_untop(my_top, lambda: messagebox.askyesno("Discard changes?", "Are you sure you want to discard your changes?")) else None  # Use `command` instead of `function`
+    )
+    discard_button.place(x=280, y=165, anchor=tk.NE)

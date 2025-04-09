@@ -47,7 +47,7 @@ class LinkedList:
         while temp:
             elements.append(str(temp.data))
             temp = temp.next
-        print(" <-> ".join(elements))
+        print(" --> ".join(elements))
 
     def search(self, key):
         temp = self.head

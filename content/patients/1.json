@@ -1,5 +1,5 @@
 {
-    "name": "Example Patient 1",
+    "name": "John Doe",
 
     "gender": "Male",
 
@@ -13,11 +13,11 @@
         "Height": 175,
         "Weight": 80,
         "BMI": 26.1,
-        "Heartrate": 40,
+        "Heartrate": 65,
         "SPO2": 85,
-        "Blood Pressure": "53/98",
+        "Blood Pressure": "118/92",
         "Temperature": 97.5,
-        "Respiratory Rate": 0
+        "Respiratory Rate": 12
     },
 
     "graph": {

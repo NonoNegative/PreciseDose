@@ -6,19 +6,12 @@
     "drugs": ["Epinephrine", "Vasopressin", "Atropine", "Lidocaine", "Sodium Bicarbonate"],
 
     "administer_methods" : {
-        "Enteral Route" : [
-            "Oral (PO)",
-            "Sublingual (SL)"
-        ],
-        "Parenteral Route" : [
-            "Intravenous (IV) Bolus",
-            "Intravenous (IV) Infusion",
-            "Intramuscular (IM)",
-            "Subcutaenous (SC)"
-        ],
-        "Topical Route" : [
-            "Nasal",
-            "Dermal"
-        ]
+        "Enteral Route" : {
+            "Oral (PO)": ["Oral.onnx", "mg"]
+        },
+        "Parenteral Route" : {
+            "Intravenous (IV) Bolus": ["IV.onnx", "mL"],
+            "Intravenous (IV) Infusion": ["IV.onnx", "mL"]
+        }
     }
 }

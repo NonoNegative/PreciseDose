@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     # ------------------Theme------------------
     colorama_init() # Initialize colorama for pretty printing
-    selected_color_theme = settings['theme'] # This is where the magic happens
+    selected_color_theme = settings['theme'] # Set the theme
     customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
     default_themes = {"blue":'#3B8ED0', "green":'#2CC985', "dark-blue":'#3A7EBF'}
     if selected_color_theme in default_themes:
@@ -198,7 +198,7 @@ if __name__ == '__main__':
                     update_parameters(start_x=23, start_y=580, row_spacing=13, padding=5, max_width=391)
             
             element.configure(command = lambda key=key, element=element: on_click(key, element))
-            element.set(f' {key} ')
+            element.set(f' {value} ')
 
             # Measure button width
             canvas.update_idletasks()
@@ -400,7 +400,7 @@ if __name__ == '__main__':
     drug_name_label = customtkinter.CTkLabel(master=canvas, text="None", font=('Alte Haas Grotesk', 12, 'bold'), width=162, height=23, corner_radius=6, bg_color='White', fg_color="#e7e7e7", text_color='Grey25')
     drug_name_label.place(x=1745, y=437, anchor=tk.NW)
 
-    calibrate_button = customtkinter.CTkButton(master=canvas, image=calibrate_icon, text='Run Simulation', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=280, height=33, corner_radius=8, bg_color='White', border_color='White', command = lambda: ext_funcs.run_simulation(parameter_map, drug_name_label.cget('text'), drug_dict[drug_name_label.cget('text')]['params'], canvas) if drug_name_label.cget('text') in drug_list else None)
+    calibrate_button = customtkinter.CTkButton(master=canvas, image=calibrate_icon, text='Run Simulation', compound=tk.LEFT, font=('Alte Haas Grotesk', 15, 'bold'), width=280, height=33, corner_radius=8, bg_color='White', border_color='White', command = lambda: ext_funcs.run_simulation(parameter_map, drug_name_label.cget('text'), drug_dict[drug_name_label.cget('text')]['params'], canvas, onnx= settings["administer_methods"].get(combobox_1.get()).get(combobox_2.get()) if settings["administer_methods"].get(combobox_1.get()) !=None else None) if drug_name_label.cget('text') in drug_list else None)
     calibrate_button.place(x=1628, y=548)
 
     drug_desc_label = customtkinter.CTkLabel(master=canvas, text="Select a drug to view its description.", font=('Alte Haas Grotesk', 12), width=160, height=74, bg_color='White', fg_color="White", wraplength=162, justify='left', anchor=tk.NW, text_color='Grey20')
@@ -431,7 +431,7 @@ if __name__ == '__main__':
         combobox_2.set("Select Method...")
         combobox_2.configure(values=administer_methods[route])
 
-    combobox_1 = customtkinter.CTkComboBox(canvas, values=["Enteral Route", "Parenteral Route", "Topical Route"], width=280, height=33, font=('Alte Haas Grotesk', 14), state='readonly', corner_radius=7, command=update_cb_2)
+    combobox_1 = customtkinter.CTkComboBox(canvas, values=["Enteral Route", "Parenteral Route"], width=280, height=33, font=('Alte Haas Grotesk', 14), state='readonly', corner_radius=7, command=update_cb_2)
     combobox_1.place(x=1628, y=830); combobox_1.set("Select Route...")
     combobox_2 = customtkinter.CTkComboBox(canvas, values=[], width=280, height=33, font=('Alte Haas Grotesk', 14), state='readonly', corner_radius=7)
     combobox_2.place(x=1628, y=874); combobox_2.set("Select Method...")
@@ -452,13 +452,13 @@ if __name__ == '__main__':
     pointers = customtk.create_tk_image('assets\\static\\pointers.png', 1920, 1080)
     canvas.create_image(0, 0, image=pointers, anchor=tk.NW, tags='interactive')
 
-    defib = customtkinter.CTkButton(canvas, corner_radius=0, text='Attach Defibrilator', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=170, command= lambda: action_history.append(['Defibrilator shocked', '10 kJ']))
+    defib = customtkinter.CTkButton(canvas, corner_radius=0, text='Attach Defibrilator', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=170, command= ext_funcs.defib)
     defib.place(x=1402, y=723, anchor=tk.N)
 
     iv = customtkinter.CTkButton(canvas, corner_radius=0, text='IV Status', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=100, command= lambda: action_history.append(['Checked IV status']))
     iv.place(x=1483, y=361, anchor=tk.W)
 
-    cpr = customtkinter.CTkButton(canvas, corner_radius=0, text='CPR', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=70, command= lambda: action_history.append(['Administered CPR', '2 mins']))
+    cpr = customtkinter.CTkButton(canvas, corner_radius=0, text='CPR', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=70, command=ext_funcs.CPR)
     cpr.place(x=1228, y=547, anchor=tk.W)
 
     vitals = customtkinter.CTkButton(canvas, corner_radius=0, text='Check Vitals', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=140, command= lambda: ext_funcs.check_vitals(parameter_map))
