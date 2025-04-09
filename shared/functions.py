@@ -405,7 +405,7 @@ def CPR():
                                 "80/min",
                                 "100/min",
                                 "120/min",
-                                "140/min",
+                                "140/min"
                             ],
         width=160, height=25, font=('Alte Haas Grotesk', 12), state='readonly', corner_radius=7
     )
@@ -452,6 +452,54 @@ def shock(my_top, num, energy):
         messagebox.showinfo("Defibrillator", f"Successfully shocked the patient {num} with {energy}J of energy.")
         attached_defib_yet = True
 
+def administer_fn(my_top, dose, dose_int, drug, method):
+    my_top.destroy()
+    if dose_int == 'Select...' or dose.strip() == '':
+        messagebox.showerror("Error!", "Invalid or empty parameters passed!")
+    else:
+        action_history.append([f'Administered {drug} | {method}', f'{dose}, {dose_int.lower()}'])
+        messagebox.showinfo("Administration", f"{drug} - {dose} will be administered {dose_int.lower()}.")
+
+def administer(drug, method):    
+    if drug == ''or drug == None or drug == 'None' or method == '' or method == None or method == 'Select Method...':
+        return None
+    my_top = create_top_level(f'Administer {drug}', 400, 205, load_captions=['Please wait...', 200])
+    my_top.canvas.create_text(200, 30, text=f'{drug} | {method}', font=("Century Gothic", 13, 'bold'), fill='Grey20')
+    my_top.canvas.create_line(10, 60, 390, 60, fill='#3B8ED0', width=4)
+    my_top.canvas.create_text(190, 90, text='Dosing interval :', font=('Alte Haas Grotesk', 12, 'bold'), fill='Grey50', anchor=tk.E)
+    my_top.canvas.create_text(190, 125, text='Dose:', font=('Alte Haas Grotesk', 12, 'bold'), fill='Grey50', anchor=tk.E)
+    my_top.canvas.create_line(10, 150, 390, 150, fill='#3B8ED0', width=4)
+
+    combobox_1 = customtkinter.CTkComboBox(
+        my_top.canvas, values=[
+                                "Just once",
+                                "Every 3-5 minutes",
+                                "Every 10 minutes"
+                            ],
+        width=160, height=25, font=('Alte Haas Grotesk', 12), state='readonly', corner_radius=7
+    )
+    combobox_1.place(x=200, y=90, anchor=tk.W)
+    combobox_1.set("Select...")
+
+    val_entry = customtkinter.CTkEntry(
+        master=my_top.canvas, placeholder_text="Nil", corner_radius=7, width=160, height=25,
+        bg_color='White', font=('Alte Haas Grotesk', 12)
+    )
+    val_entry.place(x=200, y=125, anchor=tk.W)
+
+    save_button = customtkinter.CTkButton(
+        my_top, height=30, corner_radius=6, text='Administer', font=('Alte Haas Grotesk', 15, 'bold'),
+        text_color='White', width=100, command=lambda: administer_fn(my_top, val_entry.get(), combobox_1.get(), drug, method)
+    )
+    save_button.place(x=390, y=165, anchor=tk.NE)
+
+    discard_button = customtkinter.CTkButton(
+        my_top, height=30, corner_radius=6, text='Cancel', font=('Alte Haas Grotesk', 15, 'bold'),
+        text_color='White', width=100, fg_color='IndianRed2', hover_color='IndianRed4',
+        command = lambda: my_top.destroy() if temp_untop(my_top, lambda: messagebox.askyesno("Discard changes?", "Are you sure you want to discard your changes?")) else None  # Use `command` instead of `function`
+    )
+    discard_button.place(x=280, y=165, anchor=tk.NE)
+
 def defib():    
     my_top = create_top_level(f'Defibrillator Controls', 400, 205, load_captions=['Please wait...', 200])
     my_top.canvas.create_text(200, 30, text=f'Attach Defibrillator', font=("Century Gothic", 15, 'bold'), fill='Grey20')
@@ -465,7 +513,7 @@ def defib():
                                 "1",
                                 "2",
                                 "3",
-                                "4",
+                                "4"
                             ],
         width=160, height=25, font=('Alte Haas Grotesk', 12), state='readonly', corner_radius=7
     )
