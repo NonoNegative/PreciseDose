@@ -1,0 +1,34 @@
+
+2025-04-15 03:36:32 - 40/100
+- The user did not administer CPR, which is a crucial step in cardiac arrest resuscitation.
+- The user did not check medical history before administering epinephrine, which could lead to adverse reactions.
+- The user administered only one shock with defibrillator, whereas the expected procedure calls for multiple shocks if necessary.
+- The user administered only one dose of amiodarone, although it's unclear why this was done instead of a recommended protocol that often involves administering amiodarone in combination with other medications.
+- There is no mention of checking patient's airway or breathing, which is another critical step in cardiac arrest care.
+
+You can improve by thoroughly reviewing the cardiac arrest resuscitation protocols and practicing these procedures to ensure accuracy.
+
+
+
+
+2025-04-15 03:39:13 - 30/100
+<feedback>
+• Checked Patient Details was performed 8 days after the Start of Simulation - Delayed.
+• Checked Medical History was performed after Checking Patient Details - Incorrect order.
+• Checked Vitals should have been performed before Administering CPR but was not in the user's procedure.
+• Attached Defibrillator and shocked patient were performed out of sequence, however, with a short delay in between.
+• Shocks delivered to the patient had the same energy level, however the actual expected shocks occurred at different time intervals (1min 30sec - 2 min 20sec apart).
+• Administered Epinephrine was given orally but not with the correct dosage and it should have been administered after shocking the patient.
+
+
+2025-04-15 03:41:07 - 50/100
+
+- You correctly administered CPR with a compression depth of 2 inches and a rate of 100/min, but it would be ideal if you included the duration of CPR.
+- You attached the defibrillator, which is correct, but it's recommended to check the patient's medical history before doing so.
+- Your epinephrine administration seems correct, but make sure to specify the route (IV or PO) and dose in a future simulation.
+- You administered amiodarone correctly as an oral medication, just like in the expected procedure.
+- However, you shocked the patient twice with the same energy setting. Ideally, you would have varied the energy levels for each shock.
+- Lastly, you didn't include any checks on the patient's vitals between CPR cycles or before administering epinephrine and amiodarone.
+
+Don't worry, practice makes perfect! Focus on improving your CPR technique, medical history check, and medication administration in future simulations.
+

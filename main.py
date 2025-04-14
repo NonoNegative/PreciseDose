@@ -19,7 +19,7 @@ if __name__ == '__main__':
     import tkinter.scrolledtext as st
     import asyncio
 
-    debug = False
+    debug = True
     if not debug:
         print("Loading STT model and LLM (Llama 3.2) model... Please wait...")
         from RealtimeSTT import AudioToTextRecorder
@@ -103,6 +103,9 @@ if __name__ == '__main__':
         if time_elapsed < time_limit:
             # schedule next update 1 second later
             canvas.after(1000, update_timer)
+        else:
+            messagebox.showerror("Time's Up!", "Time's Up!\n\nPatient was not revived on time.")
+            quit()
 
     ScoreL = tk.Label(canvas, text='🕑 '+time.strftime('%M:%S', time.gmtime(time_elapsed)), bg='#f3f3f3', fg='Grey30', font=("Alte Haas Grotesk", 15, 'bold'), justify='left')
     ScoreL.place(x=((screen_width-drawer_width)//2) - 12, y=5, anchor=tk.NW)

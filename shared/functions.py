@@ -642,7 +642,18 @@ def get_score_color(score):
     return f'#{r:02x}{g:02x}{b:02x}'
 
 def show_final_score(score, comment_text=""):
+
     my_top = create_top_level('Final Score', 600, 700, load_captions=['Loading...', 500])
+
+    def write_results(score, feedback):
+        with open("results.txt", "a") as file:
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            file.write(f"\n{timestamp} - {score}/100\n{feedback}\n\n")
+        my_top.destroy()
+        quit_conf = messagebox.askokcancel("Success!", "Results are saved to results.txt file. Quit?")
+        if quit_conf:
+            quit()
+
     my_top.canvas.create_text(300, 40, text="Your Final Score", font=("Montilla Ex ExtraBold DEMO", 20, "bold"), anchor='center', fill='Grey20')
     my_top.canvas.create_line(20, 70, 580, 70, fill='Grey60', width=3)
     if score <= 30:
@@ -668,7 +679,8 @@ def show_final_score(score, comment_text=""):
 
     save_button = customtkinter.CTkButton(
         my_top, height=30, corner_radius=6, text=' Save Score ', font=('Alte Haas Grotesk', 15, 'bold'),
-        text_color='White', width=100
+        text_color='White', width=100,
+        command=lambda: write_results(score, comment_text)
     )
     save_button.place(x=305, y=690, anchor=tk.SW)
 
