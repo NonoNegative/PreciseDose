@@ -13,16 +13,19 @@ if __name__ == '__main__':
     from functools import partial
     from tkinter import messagebox
     from shared.action_history import dll as action_history
+    from shared.action_history import dll_expected as expected
     import time
     import shared.functions as ext_funcs
     import tkinter.scrolledtext as st
+    import asyncio
 
-    debug = True
+    debug = False
     if not debug:
         print("Loading STT model and LLM (Llama 3.2) model... Please wait...")
         from RealtimeSTT import AudioToTextRecorder
         from ollama import chat
         from ollama import ChatResponse
+        from ollama import AsyncClient
     # -------------------End-------------------
 
     print(colored(" START ", 'light_grey', 'on_dark_grey'), "Execution Timestamp:", colored(datetime.now(), 'dark_grey'))
@@ -104,11 +107,6 @@ if __name__ == '__main__':
     ScoreL = tk.Label(canvas, text='🕑 '+time.strftime('%M:%S', time.gmtime(time_elapsed)), bg='#f3f3f3', fg='Grey30', font=("Alte Haas Grotesk", 15, 'bold'), justify='left')
     ScoreL.place(x=((screen_width-drawer_width)//2) - 12, y=5, anchor=tk.NW)
     canvas.after(1000, update_timer)
-    finish_button = customtkinter.CTkButton(canvas, height=30, corner_radius=10, text='Finish', font=('Alte Haas Grotesk', 15, 'bold'), text_color='White', width=70)
-    finish_button.place(x=((screen_width+drawer_width)//2)+12, y=5, anchor=tk.NE)
-    halt_button = customtkinter.CTkButton(canvas, height=30, corner_radius=10, text='Halt', font=('Alte Haas Grotesk', 15, 'bold'), text_color='White', width=60, fg_color='IndianRed2', hover_color='IndianRed4', command=quit)
-    halt_button.place(x=((screen_width+drawer_width)//2)-63, y=5, anchor=tk.NE)
-
     eye_icon = customtkinter.CTkImage(light_image=Image.open("assets\\icons\\eye.png"),
                                     dark_image=Image.open("assets\\icons\\eye.png"),
                                     size=(20, 20))
@@ -191,14 +189,14 @@ if __name__ == '__main__':
 
             def on_click(key, element):
                 global parameter_map
-                key = key.strip()
+                key = (element.cget('values')[0]).strip()
                 element.set(f' {key} ')
                 if messagebox.askyesno(f"Delete {key}?", f"Do you want to delete the parameter {key}?"):
                     parameter_map[key] = 0
                     update_parameters(start_x=23, start_y=580, row_spacing=13, padding=5, max_width=391)
             
             element.configure(command = lambda key=key, element=element: on_click(key, element))
-            element.set(f' {value} ')
+            element.set(f' {key} ')
 
             # Measure button width
             canvas.update_idletasks()
@@ -455,7 +453,7 @@ if __name__ == '__main__':
     defib = customtkinter.CTkButton(canvas, corner_radius=0, text='Attach Defibrilator', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=170, command= ext_funcs.defib)
     defib.place(x=1402, y=723, anchor=tk.N)
 
-    iv = customtkinter.CTkButton(canvas, corner_radius=0, text='IV Status', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=100, command= lambda: action_history.append(['Checked IV status']))
+    iv = customtkinter.CTkButton(canvas, corner_radius=0, text='IV Status', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=100, command= lambda: messagebox.showwarning("Error!", "IV Infusion set is not attached yet!"))
     iv.place(x=1483, y=361, anchor=tk.W)
 
     cpr = customtkinter.CTkButton(canvas, corner_radius=0, text='CPR', font=('Alte Haas Grotesk', 14, 'bold'), fg_color='White', hover_color='#e3e3e3', text_color='Grey30', bg_color='Black', border_width=2, border_color='Grey50', width=70, command=ext_funcs.CPR)
@@ -485,4 +483,85 @@ if __name__ == '__main__':
     interactive_button.configure(command = show_hide_interactive)
 
     generate_tab_1()
+
+    score_label = tk.Label(root, text="0%", font=('Alte Haas Grotesk', 15, 'bold'), bg="white", fg="#ff4d4d")
+    score_label.place(x=1900, y=932, anchor=tk.NE)
+
+    current_stage_index = 0
+    effect_stages = [
+    "Patient is in cardiac arrest.",
+    "Patient is showing mild response to treatment.",
+    "Patient is showing noticeable response.",
+    "Patient is slowly recovering.",
+    "Patient is steadily recovering.",
+    "Patient's vitals are stabilizing.",
+    "Patient is close to recovery.",
+    "The patient's vitals have normalized."
+    ]
+    
+    score = 0
+
+    def update_effects():
+        global current_stage_index, score
+
+        expected_clean = ext_funcs.strip_linked_list(expected)
+        user_clean = ext_funcs.strip_linked_list(action_history)
+
+        if len(user_clean) < 1:
+            canvas.delete('Sim')
+            canvas.create_text(1643, 975, text=effect_stages[0], tags='Sim', font=('Alte Haas Grotesk', 11, 'bold'), anchor=tk.NW, width=255, fill='Grey35')
+            score_label.config(text="0%", fg="#ff4d4d")
+            return
+
+        score = ext_funcs.evaluate_actions(expected_clean, user_clean)
+        stage = min(int(score * len(effect_stages)), len(effect_stages) - 1)
+
+        # Only update if advancing
+        if stage > current_stage_index:
+            current_stage_index = stage
+            canvas.delete('Sim')
+            canvas.create_text(1643, 975, text=effect_stages[stage], tags='Sim', font=('Alte Haas Grotesk', 11, 'bold'), anchor=tk.NW, width=255, fill='Grey35')
+
+        # Update the score label
+        score_percentage = int(score * 100)
+        score_label.config(text=f"{score_percentage}%", fg=ext_funcs.get_score_color(score))
+
+    def periodic_check():
+        update_effects()
+
+        # Stop if patient is fully revived
+        if score >= 1:
+            print("Simulation complete.")
+            action_history.append(['Simulation Ended', str(datetime.now())])
+            return
+
+        # Continue checking every 5 seconds
+        root.after(5000, periodic_check)
+
+    periodic_check()
+
+    async def final_score():
+        global score
+        if debug:
+            ext_funcs.show_final_score(random.randint(0, 100), 'This is a test.')
+            return None
+        
+        dll_e_string = '\n'.join([' | '.join(sublist) for sublist in expected.to_list()])
+        dll_m_string = '\n'.join([' | '.join(sublist) for sublist in action_history.to_list()]) 
+
+        message = {'role': 'user', 'content': f'I want you to compare these 2 operational procedures for cardiac arrest resuscitation. This is the expected procedure: \n{dll_e_string}\n\n And this is the users procedure: \n{dll_m_string}\n\n Compare these two and give a score out of 100 for the user on how accurate their replication of the actual procedure is. The survival rate of the patient after this procedure the user has done is {score*100}%. Reply with ONLY the score and feedback/explanation. Provide a feedback and explanation of why you gave that score in the following format: "<score>.<feedback>", for example "70.<your feedback>". Nothing else should be said in your message. You may not be so generous in your grading and can give a low score if user performs poorly. However, make sure your feedback is positive and be uplifting to the user. You shall not use any special characters, however you may use the hyphen (-) as bullet points. You can address the user by saying second person pronouns like "you". Make sure your feedback is neatly formatted in bullet points (-). Do not use any formatting language or syntaxes like < > because your reponse is going to be shown as very raw text. IMPORTANT NOTE: Do not consider the first simulation started block in the procedure. It simply exists to mark the beginning of the procedure. Do not get confused or mix up between the expected procedure and users procedure.'
+                }
+        response = await AsyncClient().chat(model='llama3.2', messages=[message])
+        
+        print(response['message']['content'])
+        score = int(response['message']['content'][:2])
+        comment = response['message']['content'][3:]
+
+        ext_funcs.show_final_score(score, comment)
+
+    finish_button = customtkinter.CTkButton(canvas, height=30, corner_radius=10, text='Finish', font=('Alte Haas Grotesk', 15, 'bold'), text_color='White', width=70, command=lambda: asyncio.run(final_score()))
+    finish_button.place(x=((screen_width+drawer_width)//2)+12, y=5, anchor=tk.NE)
+    halt_button = customtkinter.CTkButton(canvas, height=30, corner_radius=10, text='Halt', font=('Alte Haas Grotesk', 15, 'bold'), text_color='White', width=60, fg_color='IndianRed2', hover_color='IndianRed4', command=quit)
+    halt_button.place(x=((screen_width+drawer_width)//2)-63, y=5, anchor=tk.NE)
+
     root.mainloop()

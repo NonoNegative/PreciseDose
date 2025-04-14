@@ -41,5 +41,17 @@
         "Rhythm shockable? [PEA2]": {"pos": [800, 800], "text": "Rhythm shockable?", "color": "#FF9999", "next": [["VF/VT", "Yes"], ["End", "No"]]},
 
         "End": {"pos": [480, 950], "text": "End\nCheck pulse\nPost-cardiac arrest care", "color": "lightblue", "next": []}
-    }
+    },
+
+    "expected": [
+        "Simulation Started", 
+        "Checked Patient Details",
+        "Checked Vitals",
+        "Started CPR - 2 in.",
+        "Attached defibrillator",
+        "Shocked Once",
+        "Epinephrine",
+        "Amiodarone",
+        "Shocked Once"
+    ]
 }

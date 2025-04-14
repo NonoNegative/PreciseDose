@@ -67,5 +67,19 @@
             "tau": 4,
             "F": 0.9
         }
+    },
+
+    "Amiodarone": {
+        "description" : "Used to treat and prevent a number of types of cardiac dysrhythmias. Belongs to a group of medications called antiarrhythmics",
+        "recommended_dosage": {
+            "adult" : 0,
+            "paed" : 0,
+            "neonate" : 0
+        },
+        "params": {
+            "CL": 0.37,
+            "tau": 4,
+            "F": 0.4
+        }
     }
 }

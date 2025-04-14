@@ -80,6 +80,10 @@ def infer_image(img_path, window_name, size_x=None, size_y=None, attached_note="
     my_top.canvas.create_text(12, height+entry_height+40, text="Timestamp: "+ str(datetime.now()), font=('Cascadia Code', 10), fill='Grey60', anchor=tk.SW)
 
 def open_pdf(title, location, p_width=1000, p_height=1414):
+    if title == 'Patient Profile':
+        action_history.append(['Checked Patient Details', str(datetime.now())])
+    elif title == 'Patient History':
+        action_history.append(['Checked Medical History', str(datetime.now())])
     my_top = create_top_level(title, 1000, 900, load_captions=['Reading Document...', 1000, 'Opening in Viewer...', 400])
     pdf_frame = CTkPDFViewer(my_top, file=location, page_width=p_width, page_height=p_height)
     pdf_frame.pack(fill="both", expand=True, padx=10, pady=10)
@@ -269,7 +273,7 @@ def run_simulation(parameter_map, drug, params, root_canvas, onnx):
     my_top = create_top_level('Calibration Results', 600, 525, ["Calibrating...", 500])
     sim_static = customtk.create_tk_image('assets\\static\sim_static.png', 600, 600)
     my_top.canvas.create_image(0, 0, image=sim_static, anchor=tk.NW)
-    start_x=30; start_y=60; row_spacing=13; padding=5; max_width=570
+    start_x=27; start_y=60; row_spacing=13; padding=5; max_width=570
     x, y = start_x, start_y 
     button_height = 20
     found = 0
@@ -357,8 +361,8 @@ def run_simulation(parameter_map, drug, params, root_canvas, onnx):
     my_top.canvas.create_text(378, 419, text=f"{calibrated} {onnx[1]}", font=('Alte Haas Grotesk', 14, 'bold'), fill='Grey40', anchor=tk.CENTER)
 
     def save():
-        action_history.append([drug, f"Predicted dosage: {round(predicted, 3)} mL"])
-        action_history.append([drug, f"Calibrated dosage: {round(calibrated, 3)} mL"])
+        # action_history.append([drug, f"Predicted dosage: {round(predicted, 3)} mL"])
+        # action_history.append([drug, f"Calibrated dosage: {round(calibrated, 3)} mL"])
         root_canvas.delete('Sim_results')
         root_canvas.create_text(1643, 649, text=f'{drug}: {params}\n\nPredicted Dosage: {round(predicted, 3)} mL\nCalibrated Dosage: {round(calibrated, 3)} mL', tags='Sim_results', font=('Alte Haas Grotesk', 11, 'bold'), anchor=tk.NW, width=255, fill='Grey35')
         my_top.destroy()
@@ -538,3 +542,139 @@ def defib():
         command = lambda: my_top.destroy() if temp_untop(my_top, lambda: messagebox.askyesno("Discard changes?", "Are you sure you want to discard your changes?")) else None  # Use `command` instead of `function`
     )
     discard_button.place(x=280, y=165, anchor=tk.NE)
+
+
+def compare_linked_list_values(linked_list, normal_list):
+    current = linked_list.head
+    extracted_values = []
+
+    while current:
+        extracted_values.append(current.data[0])
+        current = current.next
+
+    return extracted_values == normal_list
+
+def strip_linked_list(dll):
+    values = []
+    temp = dll.head
+    while temp:
+        action = temp.data[0]  # only the 'value' part, like 'Checked Vitals'
+        # Ignore timestamps and simulation setup step
+        if not action.startswith("2025") and action != "Simulation started":
+            values.append(action)
+        temp = temp.next
+    return values
+
+def relaxed_match(expected_action, user_action):
+    if expected_action[0] != user_action[0]:
+        return False
+    
+    expected_detail = expected_action[1]
+    user_detail = user_action[1]
+
+    if not expected_detail or not user_detail:
+        return True  # Timestamp-only steps or unknowns
+
+    # CPR comparison
+    if "Compression rate" in expected_detail and "Compression rate" in user_detail:
+        try:
+            expected_rate = int(expected_detail.split("Compression rate: ")[-1].split("/")[0])
+            user_rate = int(user_detail.split("Compression rate: ")[-1].split("/")[0])
+            return abs(expected_rate - user_rate) <= 10
+        except:
+            return False
+
+    # Defibrillator energy
+    if "Energy" in expected_detail and "Energy" in user_detail:
+        try:
+            expected_energy = int(expected_detail.split("Energy: ")[-1].replace("J", ""))
+            user_energy = int(user_detail.split("Energy: ")[-1].replace("J", ""))
+            return abs(expected_energy - user_energy) <= 10
+        except:
+            return False
+
+    # Epinephrine / Amiodarone dosage
+    if "mL" in expected_detail and "mL" in user_detail:
+        try:
+            expected_dose = int(expected_detail.split("mL")[0].split()[-1])
+            user_dose = int(user_detail.split("mL")[0].split()[-1])
+            return abs(expected_dose - user_dose) <= 2
+        except:
+            return False
+
+    return expected_detail == user_detail  # Exact match fallback
+
+def evaluate_actions(expected_list, user_list):
+    if not expected_list:
+        return 0
+
+    critical_keywords = ['cpr', 'defibrillator', 'shock', 'epinephrine', 'amiodarone']
+    matches = 0
+    total = sum(1 for step in expected_list if any(word in step.lower() for word in critical_keywords))
+
+    if total == 0:
+        return 0
+
+    for user_step in user_list:
+        user_step_lower = user_step.lower()
+        if any(critical in user_step_lower for critical in critical_keywords):
+            matches += 1
+
+    score = matches / total
+    return min(score, 1.0)
+
+def get_score_color(score):
+    # Clamp score between 0 and 1
+    score = max(0, min(score, 1))
+
+    # Define RGB tuples
+    if score < 0.5:
+        # Red to Yellow
+        r = 255
+        g = int(204 * (score / 0.5))
+        b = 0
+    else:
+        # Yellow to Green
+        r = int(255 - (score - 0.5) * (255 - 77) / 0.5)
+        g = 204 + int((255 - 204) * ((score - 0.5) / 0.5))
+        b = int((score - 0.5) * (77 / 0.5))
+
+    return f'#{r:02x}{g:02x}{b:02x}'
+
+def show_final_score(score, comment_text=""):
+    my_top = create_top_level('Final Score', 600, 700, load_captions=['Loading...', 500])
+    my_top.canvas.create_text(300, 40, text="Your Final Score", font=("Montilla Ex ExtraBold DEMO", 20, "bold"), anchor='center', fill='Grey20')
+    my_top.canvas.create_line(20, 70, 580, 70, fill='Grey60', width=3)
+    if score <= 30:
+        color = 'firebrick1'
+    elif score > 30 and score <= 60:
+        color = 'gold2'
+    elif score > 60 and score <= 80:
+        color = 'dark orange'
+    else:
+        color = 'SpringGreen2'
+    my_top.canvas.create_oval(150, 120, 450, 420, fill='Grey80', width=0)
+    my_top.canvas.create_arc(150, 120, 450, 420, fill=color, outline=color, width=0, start=90, extent=-int((score/100)*360))
+    my_top.canvas.create_oval(180, 150, 420, 390, fill='White', width=0)
+    my_top.canvas.create_text(300, 240, text=str(score), font=('The Bold Font', 40), fill='Grey30', anchor='center')
+    my_top.canvas.create_line(255, 270, 345, 270, fill='Grey60', width=3)
+    my_top.canvas.create_text(300, 300, text=100, font=('The Bold Font', 40), fill='Grey30', anchor='center')
+    my_top.canvas.create_text(20, 480, text="Comments", font=("Montilla Ex ExtraBold DEMO", 15, "bold"), anchor=tk.W, fill='Grey40')
+    my_top.canvas.create_line(20, 500, 580, 500, fill='Grey60', width=3)
+    comment = customtkinter.CTkTextbox(master=my_top.canvas, corner_radius=12, width=560, height=140, bg_color='#f0f0f0', fg_color='#d8d8d8', font=('Alte Haas Grotesk', 15, 'bold'), text_color='Grey40', activate_scrollbars=True, wrap=tk.WORD)
+    comment.insert("0.0", comment_text)
+    comment.configure(state="disabled")
+    comment.place(x=20, y=512, anchor=tk.NW)
+
+    save_button = customtkinter.CTkButton(
+        my_top, height=30, corner_radius=6, text=' Save Score ', font=('Alte Haas Grotesk', 15, 'bold'),
+        text_color='White', width=100
+    )
+    save_button.place(x=305, y=690, anchor=tk.SW)
+
+    end_button = customtkinter.CTkButton(
+        my_top, height=30, corner_radius=6, text=' End Simulation ', font=('Alte Haas Grotesk', 15, 'bold'),
+        text_color='White', width=100, fg_color='IndianRed2', hover_color='IndianRed4',
+        command=my_top.destroy  # Use command instead of function
+    )
+    end_button.place(x=295, y=690, anchor=tk.SE)

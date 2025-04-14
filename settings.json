@@ -3,7 +3,7 @@
 
     "theme": "blue",
 
-    "drugs": ["Epinephrine", "Vasopressin", "Atropine", "Lidocaine", "Sodium Bicarbonate"],
+    "drugs": ["Epinephrine", "Vasopressin", "Atropine", "Lidocaine", "Sodium Bicarbonate", "Amiodarone"],
 
     "administer_methods" : {
         "Enteral Route" : {
